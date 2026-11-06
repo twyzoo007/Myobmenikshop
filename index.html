@@ -290,4 +290,88 @@
             <div class="nav-item" onclick="switchScreen('history', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg></div><span class="nav-label">История</span></div>
             <div class="nav-item nav-item-exchange" onclick="switchScreen('exchange', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div><span class="nav-label">Обмен</span></div>
             <div class="nav-item" onclick="switchScreen('bonuses', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div><span class="nav-label">Бонусы</span></div>
-            <div class="nav-item" onclick="switchScreen('services', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d
+            <div class="nav-item" onclick="switchScreen('services', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div><span class="nav-label">Услуги</span></div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        if (window.Telegram) tg.expand(); 
+
+        // --- ЛОГИКА ЭКРАНА ЗАГРУЗКИ ---
+        const splash = document.getElementById('splash');
+        const progressBar = document.getElementById('progress-bar');
+        const splashText = document.getElementById('splash-text');
+        const appContent = document.getElementById('app-content');
+
+        const steps = [
+            { text: "Проверяю подписку...", width: 30, delay: 800 },
+            { text: "Считаю деньги...", width: 60, delay: 800 },
+            { text: "Обновляю интерфейс...", width: 100, delay: 800 }
+        ];
+
+        let currentStep = 0;
+
+        function runSplash() {
+            if (currentStep < steps.length) {
+                splashText.innerText = steps[currentStep].text;
+                progressBar.style.width = steps[currentStep].width + '%';
+                currentStep++;
+                setTimeout(runSplash, steps[currentStep-1].delay);
+            } else {
+                // Завершаем загрузку
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    appContent.classList.add('loaded');
+                }, 400);
+            }
+        }
+
+        // Запускаем анимацию загрузки
+        runSplash();
+
+        // --- ТЕМА ---
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.remove('light-theme');
+        } else if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+        } else {
+            if (window.Telegram && tg.colorScheme === 'light') {
+                document.body.classList.add('light-theme');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                document.body.classList.add('light-theme');
+            }
+        }
+
+        function toggleTheme() {
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+                if(window.Telegram) tg.setHeaderColor('#000000');
+            } else {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                if(window.Telegram) tg.setHeaderColor('#ffffff');
+            }
+        }
+
+        // Юзер
+        if (window.Telegram && tg.initDataUnsafe?.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('user-name').innerText = user.first_name;
+            if (user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
+        }
+
+        // Навигация
+        function switchScreen(screenName, el) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`screen-${screenName}`).classList.add('active');
+            
+            if (el) el.classList.add('active');
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+    </html>
