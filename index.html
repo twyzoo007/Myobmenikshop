@@ -32,7 +32,7 @@
             color: var(--text); 
             margin: 0; 
             padding: 0;
-            padding-bottom: 100px;
+            padding-bottom: 110px;
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             overflow-x: hidden;
@@ -59,8 +59,8 @@
         .balance-fiat { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; font-weight: 500;}
         
         .action-grid { display: flex; gap: 10px; justify-content: center; }
-        .btn-action { flex: 1; background: var(--input-bg); color: var(--text); padding: 16px; border-radius: 16px; border: 1px solid var(--border); font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-action:active { transform: scale(0.96); }
+        .btn-action { flex: 1; background: var(--input-bg); color: var(--text); padding: 16px; border-radius: 16px; border: 1px solid var(--border); font-weight: 700; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.1s, opacity 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
         .btn-action.accent { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
         .btn-icon { flex: 0 0 auto; width: 54px; padding: 16px 0; }
 
@@ -92,9 +92,9 @@
         .details-value { color: var(--text); font-weight: 700; }
         .details-value.accent { font-weight: 800; color: var(--text); font-size: 16px;}
 
-        .btn-main { width: 100%; padding: 20px; border-radius: 18px; background: var(--accent); color: var(--accent-text); font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-main:active { transform: scale(0.98); }
-        .btn-main:disabled { background: var(--input-bg); color: var(--text-secondary); cursor: not-allowed; }
+        .btn-main { width: 100%; padding: 20px; border-radius: 18px; background: var(--accent); color: var(--accent-text); font-size: 16px; font-weight: 800; border: none; cursor: pointer; transition: transform 0.1s; }
+        .btn-main:active { transform: scale(0.97); }
+        .btn-main:disabled { background: var(--input-bg); color: var(--text-secondary); cursor: not-allowed; transform: none; }
 
         /* --- ФОРМА --- */
         .form-group { margin-bottom: 16px; }
@@ -104,13 +104,24 @@
         .back-btn { background: none; border: none; color: var(--text-secondary); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 0; margin-bottom: 20px; cursor: pointer; }
 
         /* --- ЗАЯВКИ --- */
-        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
-        .order-card:active { background: var(--card-hover); }
+        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); cursor: pointer; transition: transform 0.1s; }
+        .order-card:active { transform: scale(0.98); }
         .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .order-status { padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; }
         .status-pending { background: rgba(255, 204, 0, 0.15); color: var(--warning); }
         .status-waiting { background: rgba(43, 84, 255, 0.15); color: #5e7aff; }
         .status-completed { background: rgba(204, 255, 0, 0.15); color: var(--accent); }
+
+        /* --- СПИННЕР --- */
+        .loader-container { display: flex; justify-content: center; align-items: center; height: 150px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(204, 255, 0, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- ЗАГЛУШКА --- */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 20px; opacity: 0.8; }
+        .empty-state svg { width: 64px; height: 64px; fill: var(--text-secondary); margin-bottom: 20px; }
+        .empty-state-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+        .empty-state-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.4; max-width: 250px; }
 
         /* --- ЧАТ --- */
         .chat-header { display: flex; align-items: center; padding: 15px; background: var(--card); border-radius: 20px; border: 1px solid var(--border); gap: 12px; margin-bottom: 15px; }
@@ -125,14 +136,81 @@
         .chat-send { background: var(--accent); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--accent-text); font-size: 18px; cursor: pointer; }
         .confirm-btn { width: 100%; padding: 16px; border-radius: 16px; background: var(--success); color: white; font-size: 15px; font-weight: 800; border: none; margin-top: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 199, 89, 0.3); }
 
-        /* --- НИЖНЕЕ МЕНЮ --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); display: flex; justify-content: space-around; padding: 12px 0 25px 0; border-top: 1px solid var(--border); border-radius: 24px 24px 0 0; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-secondary); font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 20%; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item.active .nav-icon-wrap { background: rgba(204, 255, 0, 0.15); }
-        .nav-icon-wrap { width: 48px; height: 32px; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 20px; transition: 0.2s; }
-        .nav-item.active .nav-icon-wrap svg { fill: var(--accent); }
-        .nav-icon-wrap svg { fill: var(--text-secondary); width: 22px; height: 22px; }
+        /* --- НИЖНЕЕ МЕНЮ (С ВЫДЕЛЕННОЙ КНОПКОЙ ОБМЕН) --- */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: var(--card); 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: flex-end; 
+            padding: 10px 0 20px 0; 
+            border-top: 1px solid var(--border); 
+            border-radius: 24px 24px 0 0; 
+            z-index: 100; 
+        }
+        
+        .nav-item { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+            color: var(--text-secondary); 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: color 0.2s; 
+            width: 20%; 
+            position: relative;
+        }
+        
+        .nav-icon-wrap { 
+            width: 48px; 
+            height: 32px; 
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .nav-icon-wrap svg { width: 22px; height: 22px; fill: var(--text-secondary); transition: fill 0.3s; }
+
+        /* --- КНОПКА ОБМЕН (Всегда выделена в большом кружке) --- */
+        .nav-item-exchange {
+            transform: translateY(-25px); /* Поднимаем вверх */
+        }
+        
+        .nav-item-exchange .nav-icon-wrap {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 4px 15px rgba(204, 255, 0, 0.3);
+            border: 4px solid var(--card); /* Эффект обрезки круга */
+        }
+
+        .nav-item-exchange .nav-icon-wrap svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--accent-text);
+        }
+
+        .nav-item-exchange .nav-label {
+            color: var(--text);
+            margin-top: 5px;
+        }
+
+        /* --- Анимация нажатия (для всех кнопок) --- */
+        .nav-icon-wrap:active {
+            transform: scale(1.15);
+            background: var(--accent);
+        }
+        .nav-icon-wrap:active svg {
+            fill: var(--accent-text);
+        }
 
         /* --- МОДАЛКИ --- */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
@@ -151,9 +229,6 @@
         .list-text.disabled { color: var(--text-secondary); }
         .list-subtext { font-size: 13px; color: var(--text-secondary); margin-top: 4px; font-weight: 500;}
         .list-arrow { color: var(--text-secondary); font-size: 22px; }
-        .dev-placeholder { text-align: center; color: var(--text-secondary); padding: 40px 20px; font-size: 15px; margin-top: 20px;}
-        .dev-placeholder-icon { font-size: 50px; margin-bottom: 15px; opacity: 0.3; }
-        .dev-placeholder-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -180,11 +255,12 @@
                 <button class="btn-action btn-icon" onclick="alert('Временно недоступно')"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
             </div>
         </div>
-        <!-- Виджет активной заявки -->
+        
         <div id="active-order-widget" style="display:none; background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; cursor: pointer;" onclick="switchScreen('orders')">
             <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 5px;">У вас есть активная заявка</div>
             <div style="font-size: 18px; font-weight: 800; color: var(--accent);" id="widget-status">Ожидает оператора →</div>
         </div>
+
         <div class="menu-card" style="background: linear-gradient(135deg, #1a2b5e 0%, #2b54ff 100%); border: none; padding: 24px; position: relative; overflow: hidden; border-radius: 24px; margin-bottom: 20px;">
             <div style="position: relative; z-index: 2; width: 70%;">
                 <div style="font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; color: #fff;">Оплачивайте покупки криптой по QR-коду</div>
@@ -193,11 +269,11 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ЗАЯВКИ (Список) -->
+    <!-- ЭКРАН 2: ЗАЯВКИ -->
     <div id="screen-orders" class="screen">
         <div class="section-title" style="margin-top:10px; font-size: 22px; font-weight: 800; margin-bottom: 20px;">Мои заявки</div>
         <div id="orders-list">
-            <div class="dev-placeholder">Загрузка...</div>
+            <div class="loader-container"><div class="spinner"></div></div>
         </div>
     </div>
 
@@ -232,7 +308,7 @@
         <button class="btn-main" id="continue-btn" onclick="goToCheckout()" disabled>Продолжить</button>
     </div>
 
-    <!-- ЭКРАН 4: ОФОРМЛЕНИЕ ЗАЯВКИ (Checkout) -->
+    <!-- ЭКРАН 4: ОФОРМЛЕНИЕ -->
     <div id="screen-checkout" class="screen">
         <button class="back-btn" onclick="switchScreen('exchange')">← Назад</button>
         <div class="balance-label" style="margin-bottom: 20px; font-size: 18px; color: var(--text); font-weight: 800;">Оформление заявки</div>
@@ -289,41 +365,59 @@
 
     <!-- ЭКРАН 6: КАРТА -->
     <div id="screen-card" class="screen">
-        <div class="section-title" style="margin-top:10px;">Выбор карты</div>
-        <div class="dev-placeholder">
-            <div class="dev-placeholder-icon">💳</div>
-            <div class="dev-placeholder-title">Временно недоступно</div>
-            <div>Выпуск виртуальных карт появится в ближайшее время.</div>
+        <div class="section-title" style="margin-top:10px; font-size: 22px; font-weight: 800; margin-bottom: 20px;">Выбор карты</div>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+            <div class="empty-state-title">В разработке</div>
+            <div class="empty-state-desc">Выпуск виртуальных карт появится в ближайшее время.</div>
         </div>
     </div>
 
     <!-- ЭКРАН 7: БОНУСЫ -->
     <div id="screen-bonuses" class="screen">
-        <div class="section-title" style="margin-top:10px;">Бонусы</div>
-        <div class="dev-placeholder">
-            <div class="dev-placeholder-icon">🎁</div>
-            <div class="dev-placeholder-title">В разработке</div>
-            <div>Конкурсы и бонусы появятся позже.</div>
+        <div class="section-title" style="margin-top:10px; font-size: 22px; font-weight: 800; margin-bottom: 20px;">Бонусы</div>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            <div class="empty-state-title">В разработке</div>
+            <div class="empty-state-desc">Конкурсы и бонусы появятся позже.</div>
         </div>
     </div>
 
     <!-- ЭКРАН 8: УСЛУГИ -->
     <div id="screen-services" class="screen">
-        <div class="section-title" style="margin-top:10px;">Услуги</div>
-        <div class="dev-placeholder">
-            <div class="dev-placeholder-icon">⚙️</div>
-            <div class="dev-placeholder-title">В разработке</div>
-            <div>Оплата сервисов скоро будет доступна.</div>
+        <div class="section-title" style="margin-top:10px; font-size: 22px; font-weight: 800; margin-bottom: 20px;">Услуги</div>
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <div class="empty-state-title">В разработке</div>
+            <div class="empty-state-desc">Оплата сервисов скоро будет доступна.</div>
         </div>
     </div>
 
     <!-- НИЖНЕЕ МЕНЮ -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchScreen('home', this)" id="nav-home"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>Кошелек</div>
-        <div class="nav-item" onclick="switchScreen('orders', this)" id="nav-orders"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>Заявки</div>
-        <div class="nav-item" onclick="switchScreen('exchange', this)" id="nav-exchange"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg></div>Обмен</div>
-        <div class="nav-item" onclick="switchScreen('card', this)" id="nav-card"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>Карта</div>
-        <div class="nav-item" onclick="switchScreen('services', this)" id="nav-services"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>Услуги</div>
+        <div class="nav-item active" onclick="switchScreen('home', this)" id="nav-home">
+            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+            <span class="nav-label">Кошелек</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('orders', this)" id="nav-orders">
+            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+            <span class="nav-label">Заявки</span>
+        </div>
+        
+        <!-- ВЫДЕЛЕННАЯ КНОПКА ОБМЕН -->
+        <div class="nav-item nav-item-exchange" onclick="switchScreen('exchange', this)" id="nav-exchange">
+            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div>
+            <span class="nav-label">Обмен</span>
+        </div>
+
+        <div class="nav-item" onclick="switchScreen('card', this)" id="nav-card">
+            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg></div>
+            <span class="nav-label">Карта</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('services', this)" id="nav-services">
+            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div>
+            <span class="nav-label">Услуги</span>
+        </div>
     </div>
 
     <!-- МОДАЛЬНЫЕ ОКНА -->
@@ -451,9 +545,12 @@
             }
         }
 
-        // --- ЗАЯВКИ И ЧАТ ---
+        // --- ЗАЯВКИ ---
         async function loadOrders() {
-            if (!USER_ID) return;
+            if (!USER_ID) {
+                document.getElementById('orders-list').innerHTML = `<div class="empty-state"><div class="empty-state-title">Вы не авторизованы</div></div>`;
+                return;
+            }
             try {
                 const res = await fetch(`/api/user/${USER_ID}`);
                 const data = await res.json();
@@ -478,7 +575,7 @@
                     `;
                 } else {
                     widget.style.display = 'none';
-                    list.innerHTML = `<div class="dev-placeholder">У вас пока нет активных заявок.</div>`;
+                    list.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg><div class="empty-state-title">Нет заявок</div><div class="empty-state-desc">У вас пока нет активных заявок.</div></div>`;
                 }
             } catch (e) { console.error("Ошибка загрузки заявок:", e); }
         }
@@ -488,6 +585,7 @@
             return map[status] || status;
         }
 
+        // --- ЧАТ ---
         async function openChat(orderId, opName = 'Оператор') {
             currentOrderId = orderId;
             switchScreen('chat');
@@ -496,7 +594,6 @@
             
             await loadMessages();
             
-            // Автообновление чата каждые 3 секунды
             if (pollInterval) clearInterval(pollInterval);
             pollInterval = setInterval(loadMessages, 3000);
         }
@@ -508,7 +605,6 @@
                 const data = await res.json();
                 const chatBox = document.getElementById('chat-messages');
                 
-                // Очищаем и рендерим заново (чтобы не было дублей)
                 chatBox.innerHTML = '';
                 data.messages.forEach(msg => {
                     const div = document.createElement('div');
@@ -546,8 +642,7 @@
             } catch (e) { console.error(e); }
         }
 
-        // Запуск при старте
         if (USER_ID) loadOrders();
     </script>
 </body>
-                                                                                                                                                                                                                                  </html>
+</html>
