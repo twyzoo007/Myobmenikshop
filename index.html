@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SwiftSwap</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            /* Переменные для темной темы по умолчанию */
+            --bg-color: #0f0f11;
+            --card-bg: #1c1c1e;
+            --text-color: #ffffff;
+            --subtext-color: #8e8e93;
+            --input-bg: #2c2c2e;
+            --btn-sell: #ff3b30;
+            --btn-buy: #34c759;
+            --border-color: #3a3a3c;
+        }
+
+        /* Автоматическая светлая тема, если в Telegram выбрана она */
+        body.light-theme {
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-color: #000000;
+            --subtext-color: #6e6e73;
+            --input-bg: #e5e5ea;
+            --border-color: #d1d1d6;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            width: 100%; 
+            max-width: 400px; 
+            margin-bottom: 20px; 
+        }
+        
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+        .status { color: #34c759; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 8px; height: 8px; background: #34c759; border-radius: 50%; }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 24px; 
+            padding: 20px; 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
+            margin-bottom: 20px; 
+            transition: background-color 0.3s;
+        }
+
+        .input-container { 
+            background: var(--input-bg); 
+            border-radius: 16px; 
+            padding: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .input-container:focus-within { border-color: #007aff; }
+
+        .input-container input { 
+            background: transparent; 
+            border: none; 
+            color: var(--text-color); 
+            font-size: 28px; 
+            font-weight: 600;
+            width: 70%; 
+            outline: none; 
+        }
+        
+        .input-container input::placeholder { color: var(--subtext-color); }
+
+        .currency-badge { 
+            background: var(--card-bg); 
+            padding: 6px 12px; 
+            border-radius: 8px; 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .rate-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 13px; 
+            color: var(--subtext-color); 
+            margin-bottom: 20px; 
+            padding: 0 4px;
+        }
+
+        .btn { 
+            border: none; 
+            border-radius: 16px; 
+            padding: 18px; 
+            font-size: 17px; 
+            font-weight: 700; 
+            width: 100%; 
+            cursor: pointer; 
+            transition: transform 0.1s, opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn:active { transform: scale(0.98); opacity: 0.8; }
+        .btn-primary { background: var(--btn-sell); color: white; }
+        
+        /* Мини-навигация снизу (как в приложении) */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            border-radius: 20px 20px 0 0;
+        }
+        
+        .nav-item { color: var(--subtext-color); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .nav-item.active { color: #007aff; }
+        .nav-icon { font-size: 20px; }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SwiftSwap</div>
+        <div class="status"><div class="status-dot"></div> Онлайн</div>
+    </div>
+
+    <div class="card">
+        <div class="input-container">
+            <input type="number" id="rub-amount" placeholder="0" oninput="calcUsdt()">
+            <div class="currency-badge">RUB</div>
+        </div>
+        
+        <div class="rate-row">
+            <span>Курс обмена:</span>
+            <span id="rate-display">95.00 ₽</span>
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="usdt-amount" placeholder="0" readonly style="color: var(--btn-buy);">
+            <div class="currency-badge">USDT</div>
+        </div>
+
+        <div class="rate-row" style="margin-bottom: 0;">
+            <span>Комиссия сервиса:</span>
+            <span>0 ₽</span>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="createOrder()">Продать USDT</button>
+
+    <!-- Нижнее меню для красоты -->
+    <div class="bottom-nav">
+        <div class="nav-item active"><div class="nav-icon">🏠</div>Главная</div>
+        <div class="nav-item"><div class="nav-icon">🔄</div>Обмен</div>
+        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+        
+        // Применяем тему Telegram (светлая или темная)
+        if (tg.colorScheme === 'light') {
+            document.body.classList.add('light-theme');
+            tg.setHeaderColor('#f2f2f7');
+            tg.setBackgroundColor('#f2f2f7');
+        } else {
+            tg.setHeaderColor('#0f0f11');
+            tg.setBackgroundColor('#0f0f11');
+        }
+
+        // Расчет USDT
+        function calcUsdt() {
+            const rub = parseFloat(document.getElementById('rub-amount').value) || 0;
+            const rate = 95.0; 
+            const usdt = (rub / rate).toFixed(2);
+            document.getElementById('usdt-amount').value = usdt;
+        }
+
+        // Создание заявки
+        function createOrder() {
+            const rub = parseFloat(document.getElementById('rub-amount').value) || 0;
+            if (rub < 500) {
+                tg.showAlert("Минимальная сумма обмена: 500 ₽");
+                return;
+            }
+            tg.sendData(JSON.stringify({ action: 'create_order', rub_amount: rub }));
+            tg.close();
+        }
+    </script>
+</body>
+          </html>
