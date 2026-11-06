@@ -37,17 +37,18 @@
             min-height: 100vh; 
             overflow-x: hidden; 
             transition: background 0.3s, color 0.3s;
+            position: relative;
         }
 
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .screen.active > * {
+        .screen.active > *:not(.full-bg-marquee) {
             animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* --- БЕГУЩАЯ СТРОКА SWIFTSWAP (ФОН) --- */
+        /* --- ФОНОВАЯ ЛЕНТА SWIFTSWAP --- */
         .bg-marquee {
             position: fixed;
             top: 50%;
@@ -55,7 +56,7 @@
             width: 100%;
             height: 100vh;
             overflow: hidden;
-            z-index: -1;
+            z-index: -2;
             pointer-events: none;
             display: flex;
             flex-direction: column;
@@ -80,6 +81,55 @@
             to { transform: translateX(-50%); }
         }
 
+        /* --- НОВАЯ СЕТКА "СКОРО!" НА ВЕСЬ ЭКРАН --- */
+        .full-bg-marquee {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            overflow: hidden;
+            opacity: 0.15; /* Прозрачность, чтобы не перебивать контент */
+        }
+
+        .soon-row {
+            display: flex;
+            white-space: nowrap;
+            width: max-content;
+        }
+        
+        .soon-row:nth-child(odd) {
+            animation: scrollSoon 25s linear infinite;
+        }
+        .soon-row:nth-child(even) {
+            animation: scrollSoonReverse 25s linear infinite;
+        }
+
+        .soon-capsule {
+            background: var(--accent);
+            color: var(--accent-text);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 900;
+            margin: 0 15px; /* Отступы между капсулами */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        @keyframes scrollSoon {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); } /* Двигается влево */
+        }
+        @keyframes scrollSoonReverse {
+            from { transform: translateX(-50%); }
+            to { transform: translateX(0); } /* Двигается вправо */
+        }
+
         /* Шапка */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: var(--bg); z-index: 10; position: relative; }
         .logo-icon { width: 30px; height: 30px; background: var(--accent); border-radius: 8px; display: flex; justify-content: center; align-items: center; color: var(--accent-text); font-weight: 900; font-size: 14px;}
@@ -88,6 +138,8 @@
 
         .screen { display: none; padding: 0 20px; position: relative; z-index: 1; }
         .screen.active { display: block; }
+
+        h2 { position: relative; z-index: 2; margin-top: 10px; font-size: 22px; font-weight: 800; }
 
         /* Баланс */
         .balance-wrapper { background: var(--card); border-radius: 24px; padding: 25px 20px; margin-bottom: 15px; text-align: center; border: 1px solid var(--border); }
@@ -139,53 +191,6 @@
             transition: transform 0.1s;
         }
         .btn-group:active { transform: scale(0.97); }
-
-        /* --- ДИАГОНАЛЬНАЯ ЛЕНТА С КАПСУЛАМИ "СКОРО!" --- */
-        .soon-marquee-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            min-height: 70vh;
-            overflow: hidden;
-            z-index: -1;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            transform: rotate(-15deg) scale(1.2); /* Поворот всей ленты */
-        }
-
-        .soon-line {
-            display: flex;
-            white-space: nowrap;
-            animation: scrollDiagonal 15s linear infinite;
-        }
-        
-        .soon-line.reverse {
-            animation-direction: reverse;
-            animation-duration: 20s;
-        }
-
-        .soon-capsule {
-            background: var(--accent);
-            color: var(--accent-text);
-            padding: 10px 24px;
-            border-radius: 50px; /* Капсула */
-            font-size: 16px;
-            font-weight: 900;
-            text-transform: uppercase;
-            margin-right: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        @keyframes scrollDiagonal {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-        }
 
         /* Нижнее меню */
         .bottom-nav { 
@@ -244,14 +249,11 @@
         }
 
         .nav-icon-wrap:active { transform: scale(1.2); }
-        
-        /* Заголовки экранов */
-        h2 { position: relative; z-index: 2; margin-top: 10px; font-size: 22px; font-weight: 800; }
     </style>
 </head>
 <body>
 
-    <!-- ФОНОВАЯ ЛЕНТА SWIFTSWAP -->
+    <!-- ФОНОВАЯ ЛЕНТА SWIFTSWAP (везде) -->
     <div class="bg-marquee">
         <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
         <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
@@ -312,7 +314,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 4: БОНУСЫ (С фоновой лентой, БЕЗ "СКОРО") -->
+    <!-- ЭКРАН 4: БОНУСЫ -->
     <div id="screen-bonuses" class="screen">
         <h2>Бонусы</h2>
         <div style="margin-top: 20px; text-align: center; color: var(--text-secondary); padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--border);">
@@ -322,108 +324,100 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 5: УСЛУГИ (Диагональная лента) -->
+    <!-- ЭКРАН 5: УСЛУГИ (Сетка СКОРО) -->
     <div id="screen-services" class="screen">
         <h2>Услуги</h2>
         
-        <div class="soon-marquee-container">
-            <div class="soon-line">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+        <!-- Сетка на весь экран -->
+        <div class="full-bg-marquee">
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line reverse">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line reverse">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
         </div>
     </div>
 
-    <!-- ЭКРАН 6: КАРТА (Диагональная лента) -->
+    <!-- ЭКРАН 6: КАРТА (Сетка СКОРО) -->
     <div id="screen-card" class="screen">
         <h2>Карта</h2>
         
-        <div class="soon-marquee-container">
-            <div class="soon-line">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+        <div class="full-bg-marquee">
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line reverse">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
         </div>
     </div>
 
-    <!-- ЭКРАН 7: ОПЛАТА ПО QR (Диагональная лента) -->
+    <!-- ЭКРАН 7: ОПЛАТА ПО QR (Сетка СКОРО) -->
     <div id="screen-qr" class="screen">
         <button class="back-btn" onclick="switchScreen('home')" style="background:none; border:none; color: var(--text-secondary); font-size: 16px; padding: 0; margin-top: 10px; cursor: pointer; z-index: 2; position: relative;">← Назад</button>
         <h2>Оплата по QR</h2>
         
-        <div class="soon-marquee-container">
-            <div class="soon-line">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+        <div class="full-bg-marquee">
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
-            <div class="soon-line reverse">
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
-                <div class="soon-capsule">Скоро!</div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+            </div>
+            <div class="soon-row">
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
+                <div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div>
             </div>
         </div>
     </div>
@@ -444,62 +438,4 @@
             <span class="nav-label">Обмен</span>
         </div>
 
-        <div class="nav-item" onclick="switchScreen('bonuses', this)">
-            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
-            <span class="nav-label">Бонусы</span>
-        </div>
-        <div class="nav-item" onclick="switchScreen('services', this)">
-            <div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div>
-            <span class="nav-label">Услуги</span>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        if (window.Telegram) tg.expand(); 
-
-        // Инициализация темы
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.remove('light-theme');
-        } else if (savedTheme === 'light') {
-            document.body.classList.add('light-theme');
-        } else {
-            if (window.Telegram && tg.colorScheme === 'light') {
-                document.body.classList.add('light-theme');
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                document.body.classList.add('light-theme');
-            }
-        }
-
-        function toggleTheme() {
-            if (document.body.classList.contains('light-theme')) {
-                document.body.classList.remove('light-theme');
-                localStorage.setItem('theme', 'dark');
-                if(window.Telegram) tg.setHeaderColor('#000000');
-            } else {
-                document.body.classList.add('light-theme');
-                localStorage.setItem('theme', 'light');
-                if(window.Telegram) tg.setHeaderColor('#ffffff');
-            }
-        }
-
-        // Юзер
-        if (window.Telegram && tg.initDataUnsafe?.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('user-name').innerText = user.first_name;
-            if (user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
-        }
-
-        // Навигация
-        function switchScreen(screenName, el) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`screen-${screenName}`).classList.add('active');
-            
-            if (el) el.classList.add('active');
-            window.scrollTo(0,0);
-        }
-    </script>
-</body>
-</html>
+        <div class="nav
