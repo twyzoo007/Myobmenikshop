@@ -1,476 +1,81 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SwiftSwap</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg: #000000;
-            
-            /* НАСТОЯЩИЙ LIQUID GLASS (iOS Style) */
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border-top: rgba(255, 255, 255, 0.15);
-            --glass-border-bottom: rgba(255, 255, 255, 0.05);
-            --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            --glass-blur: blur(30px);
-            
-            --text: #ffffff;
-            --text-secondary: #8e8e93;
-            --accent: #ccff00;
-            --accent-text: #000000;
-            --input-bg: rgba(255, 255, 255, 0.05);
-        }
-        
-        .light-theme {
-            --bg: #f2f2f7; 
-            --glass-bg: rgba(255, 255, 255, 0.4);
-            --glass-border-top: rgba(255, 255, 255, 0.8);
-            --glass-border-bottom: rgba(0, 0, 0, 0.05);
-            --glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255,255,255,0.9);
-            
-            --text: #000000; 
-            --text-secondary: #6e6e73; 
-            --accent: #a3e635; 
-            --accent-text: #000000; 
-            --input-bg: rgba(0, 0, 0, 0.03);
-        }
-
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 100px; 
-            min-height: 100vh; overflow-x: hidden; transition: background 0.3s, color 0.3s; position: relative;
-        }
-
-        /* --- ЭКРАН ЗАГРУЗКИ (SPLASH) --- */
-        .splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.6s ease, visibility 0.6s;
-        }
-        .splash-screen.hidden { opacity: 0; visibility: hidden; }
-        
-        /* Идеально ровный SVG Логотип */
-        .splash-logo-svg {
-            width: 180px; height: 180px;
-            margin-bottom: 10px;
-            position: relative;
-            display: flex; justify-content: center; align-items: center;
-        }
-        
-        .splash-logo-svg::before {
-            content: '';
-            position: absolute;
-            width: 130px; height: 130px;
-            background: var(--accent);
-            border-radius: 50%;
-            filter: blur(50px);
-            opacity: 0.35;
-            z-index: 0;
-        }
-
-        .splash-logo-svg svg {
-            width: 100%; height: 100%;
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 0 15px rgba(204, 255, 0, 0.4));
-        }
-
-        /* Полоса загрузки */
-        .splash-progress-container {
-            width: 180px; height: 3px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px; margin-bottom: 15px; overflow: hidden; margin-top: 10px;
-        }
-        .splash-progress-bar {
-            width: 0%; height: 100%;
-            background: var(--accent); border-radius: 10px;
-            transition: width 0.3s linear; box-shadow: 0 0 15px rgba(204,255,0,0.8);
-        }
-        
-        .splash-text {
-            font-size: 13px; font-weight: 500; color: var(--text-secondary);
-            text-align: center; transition: opacity 0.3s;
-        }
-
-        /* --- АНИМАЦИЯ ПОЯВЛЕНИЯ --- */
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.95) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-        .app-content { opacity: 0; transition: opacity 0.5s ease; }
-        .app-content.loaded { opacity: 1; }
-        .app-content.loaded > .screen.active > *:not(.full-bg-marquee) { animation: popIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .app-content.loaded > .screen.active > *:nth-child(1) { animation-delay: 0.05s; }
-        .app-content.loaded > .screen.active > *:nth-child(2) { animation-delay: 0.1s; }
-
-        /* --- ФОНОВЫЕ ЛЕНТЫ --- */
-        .bg-marquee { position: fixed; top: 50%; left: 0; width: 100%; height: 100vh; overflow: hidden; z-index: -2; pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; opacity: 0.03; transform: translateY(-50%); }
-        .marquee-inner { display: flex; width: max-content; }
-        .marquee-row { white-space: nowrap; font-size: 40px; font-weight: 900; color: var(--text); text-transform: uppercase; padding-right: 20px; }
-        .marquee-inner:nth-child(odd) { animation: scrollText 30s linear infinite; }
-        .marquee-inner:nth-child(even) { animation: scrollTextReverse 35s linear infinite; }
-        @keyframes scrollText { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes scrollTextReverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-
-        .full-bg-marquee { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: -1; pointer-events: none; display: flex; flex-direction: column; justify-content: space-around; overflow: hidden; opacity: 0.15; }
-        .soon-row-inner { display: flex; width: max-content; }
-        .soon-row-inner:nth-child(odd) { animation: scrollSoon 25s linear infinite; }
-        .soon-row-inner:nth-child(even) { animation: scrollSoonReverse 25s linear infinite; }
-        .soon-capsule { background: var(--accent); color: var(--accent-text); padding: 12px 30px; border-radius: 50px; font-size: 20px; font-weight: 900; margin: 0 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); flex-shrink: 0; }
-        @keyframes scrollSoon { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes scrollSoonReverse { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-
-        /* --- ШАПКА (Liquid Glass) --- */
-        .top-bar { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 15px 20px; 
-            background: var(--glass-bg); 
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border-bottom); 
-            border-top: 1px solid var(--glass-border-top);
-            position: sticky; top: 0; z-index: 100;
-            box-shadow: var(--glass-shadow);
-        }
-        
-        .logo-icon-glass { 
-            width: 36px; height: 36px; 
-            background: rgba(204, 255, 0, 0.15); 
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(204, 255, 0, 0.3); border-top: 1px solid rgba(204,255,0,0.5);
-            border-radius: 12px; display: flex; justify-content: center; align-items: center; 
-            color: var(--accent); font-weight: 900; font-size: 20px; 
-            box-shadow: 0 4px 15px rgba(204,255,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        
-        .logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.5px;}
-        .theme-toggle { 
-            background: var(--input-bg); border: 1px solid var(--glass-border-bottom); 
-            border-top: 1px solid var(--glass-border-top); padding: 8px 14px; border-radius: 20px; 
-            font-size: 12px; cursor: pointer; color: var(--text); font-weight: 700; 
-            backdrop-filter: blur(10px); transition: 0.2s;
-        }
-
-        .screen { display: none; padding: 20px; position: relative; z-index: 1; }
-        .screen.active { display: block; }
-        h2 { position: relative; z-index: 2; margin-top: 0; font-size: 24px; font-weight: 800; }
-
-        /* --- БАЛАНС (Liquid Glass) --- */
-        .balance-wrapper { 
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border-bottom); border-top: 1px solid var(--glass-border-top);
-            box-shadow: var(--glass-shadow); 
-            border-radius: 28px; padding: 25px 20px; margin-bottom: 20px; text-align: center; 
-        }
-        .greeting { font-size: 14px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--text-secondary); }
-        .avatar { width: 28px; height: 28px; border-radius: 50%; background: #333; object-fit: cover;}
-        .balance-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 600;}
-        .balance-value { font-size: 48px; font-weight: 800; letter-spacing: -2px; margin-bottom: 4px; }
-        .balance-fiat { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; font-weight: 500;}
-        
-        .action-grid { display: flex; gap: 10px; justify-content: center; }
-        .btn-action { 
-            flex: 1; background: var(--input-bg); color: var(--text); padding: 16px; border-radius: 18px; 
-            border: 1px solid var(--glass-border-bottom); border-top: 1px solid var(--glass-border-top); 
-            font-weight: 700; font-size: 14px; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; gap: 6px; transition: all 0.2s; 
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .btn-action:active { transform: scale(0.95); }
-        .btn-action.accent { 
-            background: var(--accent); color: var(--accent-text); border: none; 
-            box-shadow: 0 4px 15px rgba(204,255,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5); 
-        }
-
-        /* --- БЛОК QR (Liquid Glass) --- */
-        .qr-block { 
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border-bottom); border-top: 1px solid var(--glass-border-top);
-            box-shadow: var(--glass-shadow); 
-            border-radius: 24px; padding: 25px 20px; margin-bottom: 20px; 
-            display: flex; flex-direction: column; align-items: center; text-align: center; gap: 15px; 
-        }
-        .qr-icon-container { 
-            width: 60px; height: 60px; background: rgba(204, 255, 0, 0.08); border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; border: 1px solid rgba(204,255,0,0.15); 
-        }
-        .qr-icon-container svg { width: 32px; height: 32px; stroke: var(--accent); }
-        .qr-text { font-size: 16px; font-weight: 700; line-height: 1.4; }
-        .btn-group { 
-            background: var(--accent); color: var(--accent-text); border: none; padding: 18px; 
-            border-radius: 18px; font-weight: 800; font-size: 16px; cursor: pointer; width: 100%; transition: transform 0.1s; 
-            box-shadow: 0 4px 15px rgba(204,255,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4); 
-        }
-        .btn-group:active { transform: scale(0.97); }
-
-        /* --- НИЖНЕЕ МЕНЮ (Liquid Glass) --- */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; right: 0; 
-            background: var(--glass-bg); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px);
-            border-top: 1px solid var(--glass-border-top); 
-            display: flex; justify-content: space-around; align-items: center; 
-            padding: 10px 0 25px 0; border-radius: 24px 24px 0 0; z-index: 100; 
-            box-shadow: 0 -5px 30px rgba(0,0,0,0.2);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--text-secondary); font-size: 10px; font-weight: 700; cursor: pointer; width: 20%; position: relative; transition: color 0.3s; }
-        .nav-icon-wrap { width: 44px; height: 44px; border-radius: 16px; display: flex; justify-content: center; align-items: center; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .nav-icon-wrap svg { width: 22px; height: 22px; fill: var(--text-secondary); transition: fill 0.3s; }
-
-        .nav-item.active:not(.nav-item-exchange) .nav-icon-wrap { 
-            background: rgba(204, 255, 0, 0.15); border: 1px solid rgba(204, 255, 0, 0.2); border-top: 1px solid rgba(204,255,0,0.3);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        }
-        .nav-item.active:not(.nav-item-exchange) .nav-icon-wrap svg { fill: var(--accent); }
-        .nav-item.active:not(.nav-item-exchange) { color: var(--accent); }
-
-        /* Центральная кнопка Обмен */
-        .nav-item-exchange { transform: translateY(-15px); }
-        .nav-item-exchange .nav-icon-wrap { 
-            width: 60px; height: 60px; background: var(--accent); 
-            box-shadow: 0 8px 25px rgba(204, 255, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.5); 
-            border: 3px solid var(--bg); border-radius: 50%; 
-        }
-        .nav-item-exchange .nav-icon-wrap svg { width: 28px; height: 28px; fill: var(--accent-text); }
-        .nav-item-exchange .nav-label { color: var(--text); margin-top: 4px; }
-
-        .nav-icon-wrap:active { transform: scale(1.15); }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#090a09">
+<title>SwiftSwap</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#090a09;--panel:rgba(255,255,255,.075);--panel2:rgba(255,255,255,.11);--text:#f6f7f2;--muted:#969b91;--line:rgba(255,255,255,.12);--lime:#ccff00;--ink:#10120a;--danger:#ff6565;--shadow:0 18px 55px rgba(0,0,0,.32);color-scheme:dark}
+:root[data-theme="light"]{--bg:#f0f2ec;--panel:rgba(255,255,255,.67);--panel2:rgba(255,255,255,.9);--text:#141610;--muted:#73796d;--line:rgba(20,25,12,.1);--ink:#11140a;--shadow:0 18px 55px rgba(45,55,25,.10);color-scheme:light}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(ellipse at 20% -10%,rgba(204,255,0,.13),transparent 40%),radial-gradient(ellipse at 100% 35%,rgba(204,255,0,.07),transparent 36%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}button,input,select{font:inherit}button{border:0;cursor:pointer;color:inherit}.app{max-width:560px;margin:auto;min-height:100vh;padding:env(safe-area-inset-top) 18px calc(106px + env(safe-area-inset-bottom));position:relative}.top{display:flex;align-items:center;justify-content:space-between;padding:18px 2px 22px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.8px;font-size:20px}.mark{width:34px;height:34px;border-radius:12px;background:linear-gradient(145deg,#efffa1,#b6ed00 55%,#85ae00);display:grid;place-items:center;color:#182000;box-shadow:0 0 28px #ccff0044,inset 0 1px 2px #fff9;font-size:21px;font-weight:1000}.top-actions{display:flex;gap:8px}.icon-btn{width:39px;height:39px;border-radius:14px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(22px);display:grid;place-items:center;font-size:17px}.glass{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.12);border-radius:25px;position:relative;overflow:hidden}.glass:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.10),transparent 34%,transparent 72%,rgba(255,255,255,.035))}.hero{padding:22px;margin-bottom:15px}.eyebrow{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:800}.balance{font-size:36px;font-weight:850;letter-spacing:-1.8px;margin:9px 0 4px}.balance small{font-size:16px;color:var(--muted);letter-spacing:0}.subline{font-size:12px;color:var(--muted)}.hero-foot{display:flex;justify-content:space-between;align-items:center;margin-top:22px;gap:10px}.pill{padding:8px 12px;border-radius:999px;background:rgba(204,255,0,.12);color:var(--lime);font-size:11px;font-weight:800;border:1px solid rgba(204,255,0,.18)}.section-title{font-size:19px;font-weight:850;letter-spacing:-.5px;margin:24px 2px 13px}.exchange{padding:18px}.field-label{display:block;font-size:11px;color:var(--muted);font-weight:750;margin:2px 0 8px}.amount-box{display:flex;align-items:center;gap:10px;padding:14px 15px;border-radius:18px;background:var(--panel2);border:1px solid var(--line);margin-bottom:10px}.amount-box input{width:100%;min-width:0;background:none;border:0;outline:0;color:var(--text);font-size:25px;font-weight:800}.currency{font-weight:900;font-size:14px;color:var(--lime);background:rgba(204,255,0,.1);padding:9px 11px;border-radius:12px}.swap-icon{width:36px;height:36px;border-radius:13px;margin:-2px auto 9px;display:grid;place-items:center;background:rgba(204,255,0,.14);color:var(--lime);font-size:19px}.rate-line{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin:13px 2px 16px}.primary{width:100%;padding:16px 18px;border-radius:17px;background:var(--lime);color:#111506;font-weight:900;box-shadow:0 8px 28px rgba(204,255,0,.18);transition:transform .16s,filter .16s}.primary:active,.nav-btn:active,.icon-btn:active,.secondary:active{transform:scale(.96);filter:brightness(.94)}.secondary{padding:12px 15px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);font-weight:750}.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}.quick{padding:16px;border-radius:20px;background:var(--panel);border:1px solid var(--line);text-align:left;min-height:92px}.quick b{display:block;font-size:14px;margin:9px 0 3px}.quick span{font-size:11px;color:var(--muted)}.quick i{font-style:normal;font-size:21px}.list{display:grid;gap:9px}.list-item{padding:15px;border-radius:18px;background:var(--panel);border:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}.list-item b{font-size:13px}.list-item small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.status{font-size:10px;padding:6px 9px;border-radius:99px;background:rgba(204,255,0,.12);color:var(--lime);white-space:nowrap}.muted{color:var(--muted)}.page{display:none;animation:appear .28s ease}.page.active{display:block}@keyframes appear{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}.nav{position:fixed;z-index:20;bottom:calc(12px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 26px));padding:8px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;border-radius:24px;background:rgba(35,38,30,.78);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(30px) saturate(160%);box-shadow:0 12px 45px #0005}.nav-btn{height:55px;border-radius:17px;background:transparent;color:#aeb3a6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px;font-weight:750;transition:.2s}.nav-btn span:first-child{font-size:18px}.nav-btn.active{background:var(--lime);color:#141a00;box-shadow:0 4px 20px #ccff0040;transform:translateY(-3px)}.input{width:100%;padding:15px;border-radius:15px;background:var(--panel2);border:1px solid var(--line);color:var(--text);outline:none;margin:5px 0 12px}.input:focus{border-color:#ccff0080}.form-label{font-size:12px;color:var(--muted);font-weight:750}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.notice{padding:14px;border-radius:16px;background:rgba(204,255,0,.08);border:1px solid rgba(204,255,0,.17);font-size:12px;color:var(--muted);line-height:1.5;margin:12px 0}.empty{text-align:center;padding:32px 15px;color:var(--muted);font-size:13px}.chatbox{height:48vh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:12px}.bubble{max-width:82%;padding:11px 13px;border-radius:16px;background:var(--panel2);font-size:13px;line-height:1.4}.bubble.mine{align-self:flex-end;background:rgba(204,255,0,.16);border:1px solid #ccff0030}.chat-send{display:flex;gap:8px;padding:10px}.chat-send input{flex:1;min-width:0}.modal{position:fixed;z-index:50;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;padding:12px}.modal.open{display:flex}.sheet{width:min(560px,100%);padding:22px;border-radius:27px 27px 20px 20px;background:var(--bg);border:1px solid var(--line);box-shadow:0 -15px 60px #0007;max-height:88vh;overflow:auto}.sheet h2{margin:0 0 16px}.toast{position:fixed;z-index:100;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-20px);opacity:0;pointer-events:none;padding:12px 17px;border-radius:14px;background:var(--text);color:var(--bg);font-size:12px;font-weight:800;transition:.25s;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}.splash{position:fixed;z-index:200;inset:0;background:#080a07;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#f7f9ed;transition:opacity .5s,visibility .5s}.splash.hide{opacity:0;visibility:hidden}.s-mark{width:112px;height:112px;border-radius:37px;display:grid;place-items:center;background:linear-gradient(145deg,#f0ffad,#ccff00 55%,#789b00);box-shadow:0 0 80px #ccff0055,inset 0 2px 4px #fff;animation:float 2.2s ease-in-out infinite;color:#111800;font-size:65px;font-weight:1000}.splash h1{font-size:27px;letter-spacing:-1px;margin:24px 0 7px}.splash p{font-size:12px;color:#a5ad94}.loader{width:150px;height:3px;background:#ffffff20;border-radius:9px;overflow:hidden;margin-top:24px}.loader:after{content:"";display:block;width:35%;height:100%;background:#ccff00;border-radius:9px;animation:load 1.2s ease-in-out infinite}@keyframes load{from{transform:translateX(-120%)}to{transform:translateX(430%)}}@keyframes float{50%{transform:translateY(-8px) rotate(3deg)}}.locked{padding:30px 18px;text-align:center}.locked .lock{font-size:40px;margin-bottom:12px}.hidden{display:none!important}
+</style>
 </head>
 <body>
-
-    <!-- ЭКРАН ЗАГРУЗКИ -->
-    <div class="splash-screen" id="splash">
-        <div class="splash-logo-svg">
-            <!-- Идеально ровный логотип -->
-            <svg viewBox="0 0 100 100">
-                <defs>
-                    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
-                        <stop offset="20%" stop-color="#ccff00" stop-opacity="1"/>
-                        <stop offset="80%" stop-color="#99cc00" stop-opacity="1"/>
-                        <stop offset="100%" stop-color="#669900" stop-opacity="1"/>
-                    </linearGradient>
-                    <!-- Внутренняя тень для объема -->
-                    <linearGradient id="innerShadow" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
-                        <stop offset="50%" stop-color="transparent" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-                
-                <!-- Тело буквы S (толстое и монолитное) -->
-                <path d="M 72 25 C 72 15, 55 10, 45 10 C 28 10, 20 20, 20 35 C 20 50, 80 50, 80 65 C 80 80, 65 90, 45 90 C 30 90, 20 85, 20 75" 
-                      fill="none" stroke="url(#glassGradient)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-                
-                <!-- Блик сверху (эффект стекла) -->
-                <path d="M 72 25 C 72 15, 55 10, 45 10" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
-                
-                <!-- Блик снизу -->
-                <path d="M 20 75 C 20 85, 30 90, 45 90" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
-
-                <!-- Тексты -->
-                <text x="72" y="20" font-family="sans-serif" font-size="12" font-weight="900" fill="#000" text-anchor="middle">RUB</text>
-                <text x="25" y="95" font-family="sans-serif" font-size="12" font-weight="900" fill="#000" text-anchor="middle">USDT</text>
-            </svg>
-        </div>
-
-        <div class="splash-progress-container">
-            <div class="splash-progress-bar" id="progress-bar"></div>
-        </div>
-
-        <div class="splash-text" id="splash-text">Проверяю подписку...</div>
-    </div>
-
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
-    <div class="app-content" id="app-content">
-        <div class="bg-marquee">
-            <div class="marquee-inner">
-                <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
-                <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
-            </div>
-            <div class="marquee-inner">
-                <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
-                <div class="marquee-row">SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP SWIFTSWAP</div>
-            </div>
-        </div>
-
-        <div class="top-bar">
-            <div class="logo-container" style="display:flex; align-items:center; gap:10px;">
-                <div class="logo-icon-glass">S</div>
-                <div class="logo-text">SwiftSwap</div>
-            </div>
-            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">Тема</button>
-        </div>
-
-        <!-- ЭКРАН 1: ГЛАВНАЯ -->
-        <div id="screen-home" class="screen active">
-            <div class="balance-wrapper">
-                <div class="greeting"><img src="https://ui-avatars.com/api/?name=U&background=random" class="avatar" id="user-avatar">Привет, <span id="user-name">Пользователь</span>!</div>
-                <div class="balance-label">Баланс кошелька</div>
-                <div class="balance-value">$0.00</div>
-                <div class="balance-fiat">1$ = 93.09 ₽</div>
-                <div class="action-grid">
-                    <button class="btn-action accent" onclick="alert('В разработке')">Пополнить ↘</button>
-                    <button class="btn-action" onclick="alert('В разработке')">Вывести ↗</button>
-                </div>
-            </div>
-
-            <div class="qr-block">
-                <div class="qr-icon-container">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><rect x="7" y="7" width="10" height="10" rx="1"></rect>
-                    </svg>
-                </div>
-                <div class="qr-text">Оплачивайте покупки криптой по QR-коду</div>
-                <button class="btn-group" onclick="switchScreen('qr')">Оплатить по QR</button>
-            </div>
-        </div>
-
-        <!-- ЭКРАН 2: ИСТОРИЯ -->
-        <div id="screen-history" class="screen">
-            <h2>История</h2>
-            <div style="text-align: center; color: var(--text-secondary); margin-top: 50px; font-weight: 500;">У вас пока нет операций.</div>
-        </div>
-
-        <!-- ЭКРАН 3: ОБМЕН -->
-        <div id="screen-exchange" class="screen">
-            <h2>Обмен USDT</h2>
-            <div style="text-align: center; color: var(--text-secondary); margin-top: 50px; font-weight: 500;">Интерфейс обмена загружается...</div>
-        </div>
-
-        <!-- ЭКРАН 4: БОНУСЫ -->
-        <div id="screen-bonuses" class="screen">
-            <h2>Бонусы</h2>
-            <div style="margin-top: 20px; text-align: center; color: var(--text-secondary); padding: 40px 20px; background: var(--glass-bg); border-radius: 24px; border: 1px solid var(--glass-border-bottom); border-top: 1px solid var(--glass-border-top); backdrop-filter: var(--glass-blur);">
-                <div style="font-size: 40px; margin-bottom: 10px;">🎁</div>
-                <div style="font-size: 16px; font-weight: 700; color: var(--text);">Активных бонусов пока нет</div>
-                <div style="font-size: 13px; margin-top: 5px;">Следите за обновлениями!</div>
-            </div>
-        </div>
-
-        <!-- ЭКРАН 5: УСЛУГИ -->
-        <div id="screen-services" class="screen">
-            <h2>Услуги</h2>
-            <div class="full-bg-marquee">
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-            </div>
-        </div>
-
-        <!-- ЭКРАН 6: КАРТА -->
-        <div id="screen-card" class="screen">
-            <h2>Карта</h2>
-            <div class="full-bg-marquee">
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-            </div>
-        </div>
-
-        <!-- ЭКРАН 7: ОПЛАТА ПО QR -->
-        <div id="screen-qr" class="screen">
-            <button class="back-btn" onclick="switchScreen('home')" style="background:none; border:none; color: var(--text-secondary); font-size: 16px; padding: 0; margin-top: 10px; cursor: pointer; z-index: 2; position: relative;">← Назад</button>
-            <h2>Оплата по QR</h2>
-            <div class="full-bg-marquee">
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-                <div class="soon-row-inner"><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div><div class="soon-capsule">СКОРО!</div></div>
-            </div>
-        </div>
-
-        <!-- НИЖНЕЕ МЕНЮ -->
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchScreen('home', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Кошелек</span></div>
-            <div class="nav-item" onclick="switchScreen('history', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg></div><span class="nav-label">История</span></div>
-            <div class="nav-item nav-item-exchange" onclick="switchScreen('exchange', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div><span class="nav-label">Обмен</span></div>
-            <div class="nav-item" onclick="switchScreen('bonuses', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div><span class="nav-label">Бонусы</span></div>
-            <div class="nav-item" onclick="switchScreen('services', this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div><span class="nav-label">Услуги</span></div>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        if (window.Telegram) tg.expand(); 
-
-        // --- ЛОГИКА ЭКРАНА ЗАГРУЗКИ ---
-        const splash = document.getElementById('splash');
-        const progressBar = document.getElementById('progress-bar');
-        const splashText = document.getElementById('splash-text');
-        const appContent = document.getElementById('app-content');
-
-        const steps = [
-            { text: "Проверяю подписку...", width: 30, delay: 800 },
-            { text: "Считаю деньги...", width: 60, delay: 800 },
-            { text: "Обновляю интерфейс...", width: 100, delay: 800 }
-        ];
-
-        let currentStep = 0;
-
-        function runSplash() {
-            if (currentStep < steps.length) {
-                splashText.innerText = steps[currentStep].text;
-                progressBar.style.width = steps[currentStep].width + '%';
-                currentStep++;
-                setTimeout(runSplash, steps[currentStep-1].delay);
-            } else {
-                setTimeout(() => {
-                    splash.classList.add('hidden');
-                    appContent.classList.add('loaded'); 
-                }, 400);
-            }
-        }
-
-        runSplash();
-
-        // --- ТЕМА ---
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.remove('light-theme');
-        } else if (savedTheme === 'light') {
-            document.body.classList.add('light-theme');
-        } else {
-            if (window.Telegram && tg.colorScheme === 'light') {
-                document.body.classList.add('light-theme');
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-                document.body.classList.add('light-theme');
-            }
-        }
-
-        function toggleTheme() {
-            if (document.body.classList.contains('light-theme')) {
-                document.body.classList.remove('light-theme');
-                localStorage.setItem('theme', 'dark');
-                if(window.Telegram) tg.setHeaderColor('#000000');
-            } else {
-                document.body.classList.add('light-theme');
-                localStorage.setItem('theme', 'light');
-                if(window.Telegram) tg.setHeaderColor('#ffffff');
-            }
-        }
-
-        // Юзер
-        if (window.Telegram && tg.initDataUnsafe?.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('user-name').innerText = user.first_name;
-            if (user.photo_url) document.getElementById('user-avatar').src = user.photo_url;
-        }
-
-        // Навигация
-        function switchScreen(screenName, el) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`screen-${screenName}`).classList.add('active');
-            
-            if (el) el.classList.add('active');
-            window.scrollTo(0,0);
-        }
-    </script>
+<div class="splash" id="splash"><div class="s-mark">S</div><h1>SwiftSwap</h1><p id="splashText">Проверяем защищённое соединение…</p><div class="loader"></div></div>
+<div class="app">
+<header class="top"><div class="brand"><div class="mark">S</div>SwiftSwap</div><div class="top-actions"><button class="icon-btn" onclick="toggleTheme()" aria-label="Тема">◐</button><button class="icon-btn" onclick="openNotifications()">♧</button></div></header>
+<div id="subscriptionLock" class="glass locked hidden"><div class="lock">🔒</div><h2>Нужна подписка</h2><p class="muted">Подпишитесь на канал SwiftSwap, чтобы продолжить.</p><button class="primary" id="joinBtn">Открыть канал</button><button class="secondary" style="width:100%;margin-top:9px" onclick="checkSubscription()">Проверить подписку</button></div>
+<main id="mainApp">
+<section class="page active" id="page-home">
+<div class="glass hero"><div class="eyebrow">Ваш баланс</div><div class="balance" id="balance">0.00 <small>USDT</small></div><div class="subline">Доступный баланс SwiftSwap</div><div class="hero-foot"><span class="pill" id="cashback">Кэшбэк 0%</span><span class="subline" id="userGreeting">Добро пожаловать</span></div></div>
+<div class="section-title">Обмен валют</div>
+<div class="glass exchange"><label class="field-label">Вы отдаёте</label><div class="amount-box"><input id="usdtAmount" type="number" min="0" step="0.01" value="100" oninput="calculate()"><span class="currency">USDT</span></div><div class="swap-icon">⇅</div><label class="field-label">Вы получаете</label><div class="amount-box"><input id="rubAmount" type="text" readonly value="—"><span class="currency">RUB</span></div><div class="rate-line"><span>Курс обмена</span><b id="rateLabel">—</b></div><button class="primary" onclick="openExchange()">Продолжить обмен <span>↗</span></button></div>
+<div class="section-title">Быстрый доступ</div><div class="quick-grid"><button class="quick" onclick="navigate('history')"><i>↗</i><b>История обменов</b><span>Все ваши операции</span></button><button class="quick" onclick="navigate('bonus')"><i>✳</i><b>Бонусы и кэшбэк</b><span>Получайте больше</span></button><button class="quick" onclick="navigate('chat')"><i>◌</i><b>Поддержка</b><span>Связь с оператором</span></button><button class="quick" onclick="navigate('profile')"><i>⌁</i><b>Пригласить друга</b><span>Реферальная программа</span></button></div>
+<div class="section-title">Последние операции</div><div class="list" id="recentOrders"><div class="empty">Загрузка операций…</div></div>
+</section>
+<section class="page" id="page-history"><div class="screen-title">История</div><div class="list" id="historyList"><div class="empty">Загрузка…</div></div></section>
+<section class="page" id="page-bonus"><div class="screen-title">Бонусы</div><div class="glass hero"><div class="eyebrow">Ваш кэшбэк</div><div class="balance" id="bonusBalance">0.00 <small>USDT</small></div><div class="subline">Накопленные бонусы</div></div><div class="section-title">Промокод</div><div class="glass exchange"><label class="field-label">Введите промокод</label><input class="input" id="promoCode" placeholder="SWIFT2026"><button class="primary" onclick="activatePromo()">Активировать</button></div><div class="notice">Бонусы и кэшбэк начисляются согласно действующим условиям SwiftSwap.</div></section>
+<section class="page" id="page-chat"><div class="screen-title">Поддержка</div><div class="notice" id="chatNotice">Выберите активную заявку, чтобы открыть чат с оператором.</div><select class="input" id="chatOrder" onchange="loadChat()"><option value="">Выберите заявку</option></select><div class="glass"><div class="chatbox" id="chatMessages"><div class="empty">Сообщений пока нет</div></div><div class="chat-send"><input class="input" id="chatText" placeholder="Напишите сообщение…" style="margin:0"><button class="primary" style="width:auto;padding:0 18px" onclick="sendChat()">➤</button></div></div></section>
+<section class="page" id="page-profile"><div class="screen-title">Профиль</div><div class="glass hero"><div class="eyebrow">Аккаунт Telegram</div><div style="font-size:22px;font-weight:850;margin:9px 0" id="profileName">Пользователь</div><div class="subline" id="profileId">ID: —</div></div><div class="section-title">Реферальная программа</div><div class="glass exchange"><div class="eyebrow">Ваша ссылка</div><div class="subline" id="refLink" style="word-break:break-all;margin:10px 0">Загрузка…</div><button class="primary" onclick="copyReferral()">Скопировать ссылку</button></div><div class="section-title">Настройки</div><button class="secondary" style="width:100%;margin-bottom:9px" onclick="toggleTheme()">Переключить тему</button><button class="secondary" style="width:100%" onclick="openNotifications()">Уведомления</button></section>
+<section class="page" id="page-owner"><div class="screen-title">Панель владельца</div><div class="quick-grid" id="ownerStats"></div><div class="section-title">Курсы и лимиты</div><div class="glass exchange"><label class="form-label">Малый курс RUB за USDT</label><input class="input" id="rateSmall" type="number" step=".01"><label class="form-label">Большой курс</label><input class="input" id="rateLarge" type="number" step=".01"><label class="form-label">Порог большого курса, RUB</label><input class="input" id="limitSmall" type="number"><label class="form-label">Минимум USDT</label><input class="input" id="minUsdt" type="number"><label class="form-label">Максимум USDT</label><input class="input" id="maxUsdt" type="number"><button class="primary" onclick="saveRates()">Сохранить настройки</button></div><div class="section-title">Канал подписки</div><div class="glass exchange"><input class="input" id="subChannel" placeholder="@channel"><button class="primary" onclick="saveSetting('sub_channel','subChannel')">Сохранить канал</button></div><div class="section-title">Операторы</div><div class="glass exchange"><input class="input" id="operatorId" type="number" placeholder="Telegram ID оператора"><div class="two"><button class="primary" onclick="operatorChange(true)">Добавить</button><button class="secondary" onclick="operatorChange(false)">Убрать</button></div><div class="list" id="operatorList" style="margin-top:12px"></div></div><div class="section-title">Промокоды</div><div class="glass exchange"><input class="input" id="newPromo" placeholder="Код"><input class="input" id="promoValue" type="number" placeholder="Награда USDT"><input class="input" id="promoLimit" type="number" value="100" placeholder="Лимит активаций"><select class="input" id="promoType"><option value="balance_usdt">Баланс USDT</option><option value="cashback_usdt">Кэшбэк USDT</option></select><button class="primary" onclick="createPromo()">Создать промокод</button></div><div class="section-title">Заявки</div><div class="list" id="ownerOrders"></div></section>
+<section class="page" id="page-operator"><div class="screen-title">Панель оператора</div><div class="notice">Заявки доступны только назначенному оператору. Подтверждайте перевод только после фактической проверки поступления средств.</div><div class="list" id="operatorOrders"></div></section>
+</main>
+</div>
+<nav class="nav" id="nav"><button class="nav-btn active" data-page="home" onclick="navigate('home')"><span>⌂</span>Главная</button><button class="nav-btn" data-page="history" onclick="navigate('history')"><span>↗</span>История</button><button class="nav-btn" data-page="bonus" onclick="navigate('bonus')"><span>✳</span>Бонусы</button><button class="nav-btn" data-page="chat" onclick="navigate('chat')"><span>◌</span>Чат</button><button class="nav-btn" data-page="profile" onclick="navigate('profile')"><span>⌁</span>Профиль</button></nav>
+<div class="modal" id="exchangeModal"><div class="sheet"><h2>Оформление обмена</h2><div class="muted" id="exchangeSummary" style="margin-bottom:16px"></div><label class="form-label">ФИО получателя</label><input class="input" id="fullName" placeholder="Иванов Иван Иванович"><label class="form-label">Номер телефона</label><input class="input" id="phone" placeholder="+7 900 000-00-00"><label class="form-label">Банк получения</label><input class="input" id="bank" placeholder="Название банка"><button class="primary" onclick="submitOrder()">Создать заявку</button><button class="secondary" style="width:100%;margin-top:9px" onclick="closeModal()">Отмена</button></div></div>
+<div class="modal" id="noticeModal"><div class="sheet"><h2>Уведомления</h2><p class="muted">Системные уведомления и статусы ваших заявок будут отображаться здесь и в Telegram.</p><button class="primary" onclick="closeModal()">Понятно</button></div></div>
+<div class="toast" id="toast"></div>
+<script>
+/* После размещения backend на HTTPS укажите адрес API ниже. Не вставляйте сюда BOT_TOKEN. */
+const API_BASE = window.SWIFTSWAP_API || "";
+const tg = window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();tg.setHeaderColor?.("#090a09");tg.setBackgroundColor?.("#090a09")}
+let state={user:null,settings:{},orders:[],activeOrder:null,rate:0,subscribed:false};
+const $=id=>document.getElementById(id);
+const authHeaders=()=>({"Content-Type":"application/json","Authorization":"tma "+(tg?.initData||"")});
+async function api(path,options={}){if(!API_BASE)throw new Error("API ещё не подключён. Сначала разместите backend на HTTPS и укажите его адрес.");const r=await fetch(API_BASE+path,{...options,headers:{...authHeaders(),...(options.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.detail||d.message||"Ошибка сервера ("+r.status+")");return d}
+function toast(s){$("toast").textContent=s;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
+function navigate(name){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("page-"+name)?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.page===name));$("nav").style.display=["owner","operator"].includes(name)?"none":"grid";if(name==="history")loadHistory();if(name==="chat")fillChatOrders();if(name==="owner")loadOwner();if(name==="operator")loadOperator()}
+function toggleTheme(){let root=document.documentElement;root.dataset.theme=root.dataset.theme==="light"?"dark":"light";try{localStorage.setItem("ss-theme",root.dataset.theme)}catch{}}
+try{document.documentElement.dataset.theme=localStorage.getItem("ss-theme")||"dark"}catch{}
+function openNotifications(){$("noticeModal").classList.add("open")}
+function closeModal(){$("exchangeModal").classList.remove("open");$("noticeModal").classList.remove("open")}
+function calculate(){const a=Number($("usdtAmount").value||0),small=Number(state.settings.rate_small||95),large=Number(state.settings.rate_large||92),threshold=Number(state.settings.limit_small||5000);const first=a*small;state.rate=first>=threshold?large:small;$("rubAmount").value=(a*state.rate).toLocaleString("ru-RU",{maximumFractionDigits:2});$("rateLabel").textContent=state.rate.toFixed(2)+" RUB"}
+function openExchange(){const a=Number($("usdtAmount").value);if(!a||a<Number(state.settings.min_usdt||5)||a>Number(state.settings.max_usdt||100000)){toast("Проверьте сумму обмена");return}$("exchangeSummary").textContent=a+" USDT → "+$("rubAmount").value+" RUB · курс "+state.rate+" RUB";$("exchangeModal").classList.add("open")}
+async function submitOrder(){try{const body={amount_usdt:Number($("usdtAmount").value),full_name:$("fullName").value.trim(),phone:$("phone").value.trim(),bank:$("bank").value.trim()};if(!body.full_name||!body.phone||!body.bank)throw new Error("Заполните все поля");const d=await api("/api/orders",{method:"POST",body:JSON.stringify(body)});closeModal();toast("Заявка #"+d.order_id+" создана");await refresh();navigate("history")}catch(e){toast(e.message)}}
+async function refresh(){try{const d=await api("/api/bootstrap");state.user=d.user;state.settings=d.settings||{};state.orders=d.orders||[];state.activeOrder=d.active_order||null;const u=state.user||{};$("balance").innerHTML=Number(u.balance_usdt||0).toFixed(2)+' <small>USDT</small>';$("bonusBalance").innerHTML=Number(u.cashback_usdt||0).toFixed(2)+' <small>USDT</small>';$("cashback").textContent="Кэшбэк "+(state.settings.cashback_percent||0)+"%";$("userGreeting").textContent="Привет, "+(u.first_name||u.username||"пользователь");$("profileName").textContent=u.first_name||u.username||"Пользователь";$("profileId").textContent="ID: "+u.id;$("refLink").textContent="https://t.me/"+(state.settings.bot_username||"SwiftSwap_app_bot")+"?start="+u.id;renderOrders();calculate();if(u.role==="owner"&&!document.querySelector('[data-page="owner"]')){$("nav").insertAdjacentHTML("beforeend",'<button class="nav-btn" data-page="owner" onclick="navigate(\\'owner\\')"><span>⚙</span>Владелец</button>')}if((u.role==="operator"||u.role==="owner")&&!document.querySelector('[data-page="operator"]')){$("nav").insertAdjacentHTML("beforeend",'<button class="nav-btn" data-page="operator" onclick="navigate(\\'operator\\')"><span>◈</span>Оператор</button>')}}catch(e){toast(e.message);$("splashText").textContent=e.message}}
+function renderOrders(){const html=state.orders.slice(0,4).map(orderCard).join("")||'<div class="empty">Пока нет операций</div>';$("recentOrders").innerHTML=html}
+function orderCard(o){const labels={pending:"Ожидает оператора",assigned:"Оператор назначен",waiting_payment:"Ожидает оплату",waiting_confirm:"Проверка оплаты",completed:"Завершено",rejected:"Отклонено",cancelled:"Отменено"};return `<div class="list-item" onclick="selectChatOrder(${o.id})"><div><b>Заявка #${o.id}</b><small>${Number(o.amount_usdt).toFixed(2)} USDT → ${Number(o.amount_rub).toFixed(2)} RUB · ${o.created_at||""}</small></div><span class="status">${labels[o.status]||o.status}</span></div>`}
+async function loadHistory(){try{const d=await api("/api/orders/history");$("historyList").innerHTML=(d.orders||[]).map(orderCard).join("")||'<div class="empty">История пуста</div>'}catch(e){toast(e.message)}}
+function fillChatOrders(){const select=$("chatOrder");select.innerHTML='<option value="">Выберите заявку</option>'+state.orders.map(o=>`<option value="${o.id}">Заявка #${o.id} · ${o.status}</option>`).join("")}
+function selectChatOrder(id){navigate("chat");fillChatOrders();$("chatOrder").value=id;loadChat()}
+async function loadChat(){const id=$("chatOrder").value;if(!id)return;try{const d=await api("/api/messages/"+id);$("chatMessages").innerHTML=(d.messages||[]).map(m=>`<div class="bubble ${m.sender_id===state.user.id?"mine":""}">${escapeHtml(m.text)}<small style="display:block;opacity:.55;margin-top:5px">${m.created_at||""}</small></div>`).join("")||'<div class="empty">Сообщений пока нет</div>';$("chatMessages").scrollTop=$("chatMessages").scrollHeight}catch(e){toast(e.message)}}
+async function sendChat(){const id=Number($("chatOrder").value),text=$("chatText").value.trim();if(!id||!text)return;try{await api("/api/messages/send",{method:"POST",body:JSON.stringify({order_id:id,text})});$("chatText").value="";loadChat()}catch(e){toast(e.message)}}
+async function activatePromo(){try{const d=await api("/api/promos/activate",{method:"POST",body:JSON.stringify({code:$("promoCode").value})});toast("Промокод активирован: +"+d.reward_value);$("promoCode").value="";refresh()}catch(e){toast(e.message)}}
+async function loadOwner(){try{const d=await api("/api/owner/overview");$("ownerStats").innerHTML=`<div class="quick"><i>♙</i><b>${d.stats.users}</b><span>Пользователей</span></div><div class="quick"><i>⇄</i><b>${d.stats.orders}</b><span>Заявок</span></div><div class="quick"><i>◷</i><b>${d.stats.pending}</b><span>Ожидают</span></div>`;$("operatorList").innerHTML=(d.operators||[]).map(o=>`<div class="list-item"><b>${escapeHtml(o.first_name||o.username||"Оператор")}</b><small>${o.user_id}</small></div>`).join("")||'<div class="empty">Операторов пока нет</div>';$("ownerOrders").innerHTML=(d.latest_orders||[]).map(orderCard).join("")||'<div class="empty">Заявок нет</div>';for(const [k,id] of [["rate_small","rateSmall"],["rate_large","rateLarge"],["limit_small","limitSmall"],["min_usdt","minUsdt"],["max_usdt","maxUsdt"],["sub_channel","subChannel"]])$(id).value=state.settings[k]||""}catch(e){toast(e.message)}}
+async function saveSetting(key,id){try{await api("/api/owner/settings",{method:"POST",body:JSON.stringify({key,value:$(id).value})});toast("Сохранено");refresh()}catch(e){toast(e.message)}}
+async function saveRates(){for(const [key,id] of [["rate_small","rateSmall"],["rate_large","rateLarge"],["limit_small","limitSmall"],["min_usdt","minUsdt"],["max_usdt","maxUsdt"]])await api("/api/owner/settings",{method:"POST",body:JSON.stringify({key,value:$(id).value})});toast("Курсы и лимиты сохранены");refresh()}
+async function operatorChange(enabled){try{await api("/api/owner/operators",{method:"POST",body:JSON.stringify({user_id:Number($("operatorId").value),enabled})});toast("Роль обновлена");loadOwner()}catch(e){toast(e.message)}}
+async function createPromo(){try{await api("/api/owner/promos",{method:"POST",body:JSON.stringify({code:$("newPromo").value,reward_type:$("promoType").value,reward_value:Number($("promoValue").value),activations_limit:Number($("promoLimit").value)})});toast("Промокод создан");$("newPromo").value=""}catch(e){toast(e.message)}}
+async function loadOperator(){try{const d=await api("/api/operator/orders");$("operatorOrders").innerHTML=(d.orders||[]).map(o=>`<div class="list-item" style="display:block"><b>Заявка #${o.id}</b><small>${o.amount_usdt} USDT → ${o.amount_rub} RUB · ${o.status}</small><div class="two" style="margin-top:10px"><button class="secondary" onclick="operatorAction(${o.id},'accept')">Принять</button><button class="primary" onclick="operatorAction(${o.id},'complete')">Подтвердить перевод</button></div></div>`).join("")||'<div class="empty">Нет заявок</div>'}catch(e){toast(e.message)}}
+async function operatorAction(id,action){try{if(action==="accept")throw new Error("Принятие заявки пока выполняется через уведомление бота оператору.");await api("/api/operator/orders/"+id+"/complete",{method:"POST"});toast("Заявка завершена");loadOperator()}catch(e){toast(e.message)}}
+function copyReferral(){const text=$("refLink").textContent;navigator.clipboard?.writeText(text).then(()=>toast("Ссылка скопирована")).catch(()=>toast(text))}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function checkSubscription(){try{const d=await api("/api/subscription/check");state.subscribed=d.subscribed;if(d.subscribed){$("subscriptionLock").classList.add("hidden");$("mainApp").classList.remove("hidden");refresh()}else toast("Подписка пока не найдена")}catch(e){toast(e.message)}}
+async function init(){const splashLines=["Проверяем подписку…","Сверяем курс и лимиты…","Подготавливаем SwiftSwap…"];let i=0;const t=setInterval(()=>$("splashText").textContent=splashLines[i++%splashLines.length],900);try{if(!tg?.initData)throw new Error("Откройте Mini App через Telegram");await refresh();const sub=await api("/api/subscription/check");if(sub.required&&!sub.subscribed){$("mainApp").classList.add("hidden");$("subscriptionLock").classList.remove("hidden");$("joinBtn").onclick=()=>tg.openTelegramLink(sub.invite_link||"https://t.me/")}else{$("subscriptionLock").classList.add("hidden");$("mainApp").classList.remove("hidden")}}catch(e){$("splashText").textContent=e.message}finally{clearInterval(t);setTimeout(()=>$("splash").classList.add("hide"),850)}}
+init();
+</script>
 </body>
-    </html>
+</html>                                                                                                                                                                                                                                       </html>
