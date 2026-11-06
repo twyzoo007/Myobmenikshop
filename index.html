@@ -2,138 +2,357 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#080a08">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
 <title>SwiftSwap</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#080a08;--fg:#f5f7ef;--muted:#92998b;--glass:rgba(255,255,255,.075);--glass2:rgba(255,255,255,.12);--line:rgba(255,255,255,.13);--lime:#ccff00;--shadow:0 20px 55px #0005;color-scheme:dark}
-:root.light{--bg:#eef0e9;--fg:#171a12;--muted:#747b6e;--glass:rgba(255,255,255,.65);--glass2:rgba(255,255,255,.88);--line:rgba(20,25,12,.1);--shadow:0 20px 50px #46502b18;color-scheme:light}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,Arial,sans-serif}body{background:radial-gradient(ellipse at 12% 0%,#ccff0019,transparent 38%),radial-gradient(ellipse at 100% 55%,#ccff000b,transparent 35%),var(--bg);padding-bottom:calc(95px + env(safe-area-inset-bottom));transition:.25s}button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}.wrap{width:min(570px,100%);margin:auto;padding:env(safe-area-inset-top) 17px 20px}.top{height:65px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:900;letter-spacing:-.8px}.mini-logo{width:35px;height:35px;border-radius:12px;background:linear-gradient(145deg,#f1ffad,#ccff00 55%,#789900);display:grid;place-items:center;color:#101600;box-shadow:0 0 25px #ccff0045;font-weight:1000;font-size:22px}.topright{display:flex;gap:8px}.icon{width:40px;height:40px;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(20px);border-radius:14px;font-size:18px}.glass{position:relative;overflow:hidden;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(28px) saturate(155%);-webkit-backdrop-filter:blur(28px) saturate(155%);border-radius:25px;box-shadow:var(--shadow),inset 0 1px 0 #ffffff18}.glass:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(130deg,#ffffff13,transparent 30%,transparent 75%,#ffffff08)}.hero{padding:22px;margin:10px 0 22px}.muted{color:var(--muted)}.eyebrow{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--muted);font-weight:850}.balance{font-size:37px;font-weight:900;letter-spacing:-1.7px;margin:10px 0 4px}.balance small{font-size:15px;color:var(--muted);letter-spacing:0}.hero-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;gap:10px}.tag{padding:8px 12px;border-radius:30px;background:#ccff0019;border:1px solid #ccff0035;color:var(--lime);font-size:11px;font-weight:850}.section{font-size:19px;font-weight:900;letter-spacing:-.5px;margin:23px 2px 12px}.fieldname{font-size:11px;color:var(--muted);font-weight:800;display:block;margin:3px 0 8px}.amount{height:67px;padding:10px 13px;border:1px solid var(--line);border-radius:17px;background:var(--glass2);display:flex;align-items:center;gap:10px;margin-bottom:9px}.amount input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--fg);font-size:26px;font-weight:850}.currency{padding:9px 11px;border-radius:12px;background:#ccff001b;color:var(--lime);font-size:13px;font-weight:900}.swap{height:35px;width:35px;margin:0 auto 9px;border-radius:12px;background:#ccff0020;color:var(--lime);display:grid;place-items:center;font-size:20px}.rate{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin:14px 2px}.primary{border:0;background:var(--lime);color:#121800;font-weight:950;border-radius:16px;padding:16px;width:100%;box-shadow:0 8px 28px #ccff0027;transition:transform .16s,filter .16s}.primary:active,.secondary:active,.icon:active,.navbtn:active{transform:scale(.96);filter:brightness(.93)}.secondary{background:var(--glass2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:800}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tile{min-height:100px;text-align:left;padding:15px;border:1px solid var(--line);border-radius:20px;background:var(--glass);backdrop-filter:blur(20px)}.tile i{font-style:normal;font-size:22px}.tile b{display:block;font-size:13px;margin:8px 0 3px}.tile small{color:var(--muted);font-size:11px}.page{display:none;animation:in .25s ease}.page.active{display:block}@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.title{font-size:29px;font-weight:950;letter-spacing:-1.2px;margin:13px 0 20px}.rowitem{padding:15px;border:1px solid var(--line);border-radius:17px;background:var(--glass);display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.rowitem b{font-size:13px}.rowitem small{display:block;color:var(--muted);font-size:11px;margin-top:5px}.status{font-size:10px;padding:7px 9px;border-radius:30px;background:#ccff001b;color:var(--lime);white-space:nowrap}.input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--glass2);color:var(--fg);outline:0;margin:6px 0 12px}.input:focus{border-color:#ccff0090}.label{font-size:11px;color:var(--muted);font-weight:800}.note{padding:13px;border:1px solid #ccff0030;background:#ccff000d;color:var(--muted);border-radius:15px;font-size:12px;line-height:1.5;margin:12px 0}.empty{text-align:center;padding:27px 12px;color:var(--muted);font-size:13px}.nav{position:fixed;z-index:30;bottom:calc(10px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(535px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px;border-radius:24px;background:#292d25d9;border:1px solid #ffffff20;backdrop-filter:blur(30px);box-shadow:0 15px 50px #0006}.navbtn{height:54px;border:0;border-radius:17px;background:transparent;color:#aeb5a4;font-size:9px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.navbtn span{font-size:19px}.navbtn.active{background:var(--lime);color:#121800;box-shadow:0 5px 20px #ccff0040;transform:translateY(-2px)}.modal{display:none;position:fixed;z-index:60;inset:0;background:#000a;align-items:flex-end;justify-content:center;padding:12px}.modal.open{display:flex}.sheet{width:min(570px,100%);max-height:88vh;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:27px;padding:22px;box-shadow:0 -15px 55px #0008}.sheet h2{margin:0 0 16px}.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.chatbox{height:40vh;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}.bubble{max-width:85%;padding:11px 13px;border-radius:15px;background:var(--glass2);font-size:13px;line-height:1.45}.bubble.mine{align-self:flex-end;background:#ccff0021;border:1px solid #ccff0030}.chatline{display:flex;gap:8px;padding:9px}.chatline input{flex:1;min-width:0;margin:0}.toast{position:fixed;z-index:100;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-20px);opacity:0;transition:.25s;background:var(--fg);color:var(--bg);padding:12px 16px;border-radius:14px;font-size:12px;font-weight:850;max-width:90%;text-align:center;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}.splash{position:fixed;z-index:200;inset:0;background:#070907;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#f7f9ed;transition:opacity .5s,visibility .5s}.splash.hide{opacity:0;visibility:hidden}.splash h1{font-size:28px;letter-spacing:-1px;margin:22px 0 8px}.splash p{font-size:12px;color:#aab19d;text-align:center;padding:0 25px}.splash-art{width:180px;height:180px;filter:drop-shadow(0 0 35px #ccff0055);animation:levitate 2.5s ease-in-out infinite}.progress{height:4px;width:160px;background:#ffffff25;border-radius:9px;overflow:hidden;margin-top:25px}.progress:after{content:"";display:block;height:100%;width:35%;background:var(--lime);border-radius:9px;animation:progress 1.3s ease-in-out infinite}@keyframes progress{from{transform:translateX(-120%)}to{transform:translateX(420%)}}@keyframes levitate{50%{transform:translateY(-7px) rotate(1deg)}}.lock{padding:25px;text-align:center}.hide{display:none!important}
+:root{
+ --bg:#000;--glass-bg:rgba(255,255,255,.035);--glass-border-top:rgba(255,255,255,.16);
+ --glass-border-bottom:rgba(255,255,255,.06);--glass-shadow:0 10px 40px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.1);
+ --glass-blur:blur(30px);--text:#fff;--text-secondary:#8e8e93;--accent:#ccff00;
+ --accent-text:#000;--input-bg:rgba(255,255,255,.055);--field-border:rgba(255,255,255,.12);
+}
+body.light-theme{
+ --bg:#f2f2f7;--glass-bg:rgba(255,255,255,.48);--glass-border-top:rgba(255,255,255,.88);
+ --glass-border-bottom:rgba(0,0,0,.055);--glass-shadow:0 10px 40px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9);
+ --text:#080808;--text-secondary:#6e6e73;--accent:#a3e635;--accent-text:#000;
+ --input-bg:rgba(0,0,0,.035);--field-border:rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg)}
+body{background:var(--bg);color:var(--text);margin:0;padding:0 0 112px;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;position:relative}
+button,input,select,textarea{font:inherit}
+button{color:inherit}
+.splash-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity .6s,visibility .6s}
+.splash-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo-svg{width:180px;height:180px;margin-bottom:10px;position:relative;display:flex;justify-content:center;align-items:center}
+.splash-logo-svg:before{content:"";position:absolute;width:130px;height:130px;background:var(--accent);border-radius:50%;filter:blur(50px);opacity:.35}
+.splash-logo-svg svg{width:100%;height:100%;position:relative;filter:drop-shadow(0 0 15px rgba(204,255,0,.4))}
+.splash-progress-container{width:180px;height:3px;background:rgba(128,128,128,.2);border-radius:10px;margin:10px 0 15px;overflow:hidden}
+.splash-progress-bar{width:0;height:100%;background:var(--accent);border-radius:10px;transition:width .35s;box-shadow:0 0 15px rgba(204,255,0,.8)}
+.splash-text{font-size:13px;font-weight:600;color:var(--text-secondary);text-align:center;max-width:85%;min-height:18px}
+@keyframes popIn{0%{opacity:0;transform:scale(.97) translateY(14px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+.app-content{opacity:0;transition:opacity .5s}
+.app-content.loaded{opacity:1}
+.app-content.loaded>.screen.active>*{animation:popIn .55s cubic-bezier(.16,1,.3,1) both}
+.app-content.loaded>.screen.active>*:nth-child(2){animation-delay:.06s}
+.app-content.loaded>.screen.active>*:nth-child(3){animation-delay:.12s}
+
+/* Общая бесконечная лента капсул */
+#capsule-world{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-evenly;opacity:.20;transition:opacity .35s}
+.capsule-track{display:flex;width:max-content;flex-shrink:0;animation:capsuleFlight 34s linear infinite}
+.capsule-track.reverse{animation-name:capsuleFlightReverse;animation-duration:39s}
+.capsule-track.fast{animation-duration:27s}
+.capsule{position:relative;flex-shrink:0;margin:12px 10px;padding:13px 30px;border-radius:999px;font-size:19px;font-weight:900;letter-spacing:1.5px;white-space:nowrap;overflow:hidden;color:var(--accent);background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.025) 48%,rgba(204,255,0,.11));border:1px solid rgba(204,255,0,.25);border-top:1px solid rgba(255,255,255,.38);box-shadow:0 8px 30px rgba(0,0,0,.18),inset 0 1px 2px rgba(255,255,255,.24),inset 0 -2px 5px rgba(0,0,0,.12);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);text-shadow:0 0 15px rgba(204,255,0,.28)}
+.capsule:before{content:"";position:absolute;top:0;left:-100%;width:65%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.25),transparent);transform:skewX(-25deg);animation:capsuleShine 5.5s ease-in-out infinite}
+.capsule.soon{color:#101400;background:linear-gradient(135deg,rgba(204,255,0,.92),rgba(204,255,0,.52),rgba(255,255,255,.3));border:1px solid rgba(255,255,255,.6);border-top:1px solid rgba(255,255,255,.95);box-shadow:0 8px 35px rgba(204,255,0,.2),inset 0 2px 3px rgba(255,255,255,.7),inset 0 -3px 8px rgba(0,0,0,.12);text-shadow:0 1px 2px rgba(255,255,255,.25)}
+@keyframes capsuleFlight{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes capsuleFlightReverse{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes capsuleShine{0%,55%{left:-100%}85%,100%{left:150%}}
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--glass-border-bottom);border-top:1px solid var(--glass-border-top);position:sticky;top:0;z-index:100;box-shadow:var(--glass-shadow)}
+.logo-container{display:flex;align-items:center;gap:10px}
+.logo-icon-glass{width:36px;height:36px;background:rgba(204,255,0,.15);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(204,255,0,.3);border-top:1px solid rgba(204,255,0,.5);border-radius:12px;display:flex;justify-content:center;align-items:center;color:var(--accent);font-weight:900;font-size:20px;box-shadow:0 4px 15px rgba(204,255,0,.1),inset 0 1px 0 rgba(255,255,255,.2)}
+.logo-text{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.theme-toggle{background:var(--input-bg);border:1px solid var(--glass-border-bottom);border-top:1px solid var(--glass-border-top);padding:8px 14px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--text);font-weight:700;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.screen{display:none;padding:20px;position:relative;z-index:1;min-height:calc(100vh - 180px)}
+.screen.active{display:block}
+h2{position:relative;z-index:2;margin:0 0 20px;font-size:24px;font-weight:800;letter-spacing:-.5px}
+.balance-wrapper,.qr-block,.glass-card{background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border-bottom);border-top:1px solid var(--glass-border-top);box-shadow:var(--glass-shadow);border-radius:28px;padding:25px 20px;margin-bottom:20px}
+.balance-wrapper{text-align:center}
+.greeting{font-size:14px;font-weight:600;margin-bottom:15px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--text-secondary)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--input-bg);object-fit:cover}
+.balance-label{font-size:13px;color:var(--text-secondary);margin-bottom:5px;font-weight:600}
+.balance-value{font-size:48px;font-weight:800;letter-spacing:-2px;margin-bottom:4px}
+.balance-fiat{font-size:13px;color:var(--text-secondary);margin-bottom:20px;font-weight:500}
+.action-grid{display:flex;gap:10px;justify-content:center}
+.btn-action{flex:1;background:var(--input-bg);color:var(--text);padding:16px 10px;border-radius:18px;border:1px solid var(--glass-border-bottom);border-top:1px solid var(--glass-border-top);font-weight:700;font-size:14px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:6px;transition:transform .2s,background .2s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.btn-action:active,.btn-group:active,.primary-btn:active{transform:scale(.97)}
+.btn-action.accent,.btn-group,.primary-btn{background:var(--accent);color:var(--accent-text);border:0;box-shadow:0 4px 15px rgba(204,255,0,.25),inset 0 1px 0 rgba(255,255,255,.5)}
+.qr-block{display:flex;flex-direction:column;align-items:center;text-align:center;gap:15px;border-radius:24px}
+.qr-icon-container{width:60px;height:60px;background:rgba(204,255,0,.08);border-radius:50%;display:flex;justify-content:center;align-items:center;border:1px solid rgba(204,255,0,.15)}
+.qr-icon-container svg{width:32px;height:32px;stroke:var(--accent)}
+.qr-text{font-size:16px;font-weight:700;line-height:1.4}
+.btn-group,.primary-btn{padding:17px 18px;border-radius:18px;font-weight:800;font-size:15px;cursor:pointer;width:100%;transition:transform .1s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--glass-bg);backdrop-filter:blur(35px);-webkit-backdrop-filter:blur(35px);border-top:1px solid var(--glass-border-top);display:flex;justify-content:space-around;align-items:center;padding:10px 0 max(25px,env(safe-area-inset-bottom));border-radius:24px 24px 0 0;z-index:100;box-shadow:0 -5px 30px rgba(0,0,0,.2)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-secondary);font-size:10px;font-weight:700;cursor:pointer;width:20%;position:relative;transition:color .3s}
+.nav-icon-wrap{width:44px;height:44px;border-radius:16px;display:flex;justify-content:center;align-items:center;transition:all .3s cubic-bezier(.175,.885,.32,1.275)}
+.nav-icon-wrap svg{width:22px;height:22px;fill:var(--text-secondary);transition:fill .3s}
+.nav-item.active:not(.nav-item-exchange) .nav-icon-wrap{background:rgba(204,255,0,.15);border:1px solid rgba(204,255,0,.2);border-top:1px solid rgba(204,255,0,.3);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav-item.active:not(.nav-item-exchange) .nav-icon-wrap svg{fill:var(--accent)}
+.nav-item.active:not(.nav-item-exchange){color:var(--accent)}
+.nav-item-exchange{transform:translateY(-15px)}
+.nav-item-exchange .nav-icon-wrap{width:60px;height:60px;background:var(--accent);box-shadow:0 8px 25px rgba(204,255,0,.4),inset 0 1px 0 rgba(255,255,255,.5);border:3px solid var(--bg);border-radius:50%}
+.nav-item-exchange .nav-icon-wrap svg{width:28px;height:28px;fill:var(--accent-text)}
+.nav-item-exchange .nav-label{color:var(--text);margin-top:4px}
+.nav-icon-wrap:active{transform:scale(1.12)}
+.muted{text-align:center;color:var(--text-secondary);margin-top:45px;font-weight:500;line-height:1.6}
+.feature-card{padding:22px;border-radius:24px;background:var(--glass-bg);border:1px solid var(--glass-border-bottom);border-top:1px solid var(--glass-border-top);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);box-shadow:var(--glass-shadow);margin-bottom:14px}
+.feature-icon{font-size:38px;margin-bottom:10px}
+.feature-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.feature-description{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.field-label{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin:16px 0 7px}
+.field{width:100%;padding:15px 16px;border-radius:15px;border:1px solid var(--field-border);background:var(--input-bg);color:var(--text);outline:none;font-size:15px}
+.field:focus{border-color:rgba(204,255,0,.65);box-shadow:0 0 0 3px rgba(204,255,0,.09)}
+.field::placeholder{color:var(--text-secondary)}
+.quote-box{margin:16px 0;padding:15px;border-radius:16px;background:rgba(204,255,0,.08);border:1px solid rgba(204,255,0,.16);font-size:13px;line-height:1.6}
+.back-btn{background:none;border:0;color:var(--text-secondary);font-size:16px;padding:0;margin:0 0 18px;cursor:pointer}
+.status-pill{display:inline-block;padding:7px 11px;border-radius:99px;background:rgba(204,255,0,.1);color:var(--accent);font-size:11px;font-weight:800}
+.history-item{padding:16px 0;border-bottom:1px solid var(--glass-border-bottom);display:flex;justify-content:space-between;gap:12px;font-size:13px}
+.history-item:last-child{border-bottom:0}
+.history-item small{display:block;color:var(--text-secondary);margin-top:5px}
+.profile-row{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.profile-row .avatar{width:52px;height:52px}
+.hidden{display:none!important}
+@media(prefers-reduced-motion:reduce){.capsule-track,.capsule:before{animation-duration:120s}*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<div class="splash" id="splash">
-<svg class="splash-art" viewBox="0 0 220 220" role="img" aria-label="SwiftSwap RUB USDT">
-<defs>
- <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5ffbd"/><stop offset=".35" stop-color="#d8ff35"/><stop offset=".72" stop-color="#b4e900"/><stop offset="1" stop-color="#6e9400"/></linearGradient>
- <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".8"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#243000" stop-opacity=".25"/></linearGradient>
- <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
-</defs>
-<rect x="13" y="13" width="194" height="194" rx="58" fill="#ccff00" opacity=".14" filter="url(#soft)"/>
-<rect x="19" y="19" width="182" height="182" rx="55" fill="url(#metal)" stroke="#f3ffb2" stroke-opacity=".8" stroke-width="2"/>
-<rect x="20" y="20" width="180" height="180" rx="54" fill="url(#shine)"/>
-<path d="M65 83 H151 L135 67 M151 83 L135 99" fill="none" stroke="#172000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M155 137 H69 L85 121 M69 137 L85 153" fill="none" stroke="#172000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="108" y="75" fill="#172000" font-size="12" font-weight="900" text-anchor="middle">RUB</text>
-<text x="110" y="169" fill="#172000" font-size="12" font-weight="900" text-anchor="middle">USDT</text>
-</svg>
-<h1>SwiftSwap</h1><p id="loadingText">Проверяем защищённое соединение…</p><div class="progress"></div>
+
+<div class="splash-screen" id="splash">
+ <div class="splash-logo-svg">
+  <svg viewBox="0 0 100 100" aria-label="SwiftSwap">
+   <defs><linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#fff" stop-opacity=".9"/><stop offset="20%" stop-color="#ccff00"/><stop offset="80%" stop-color="#99cc00"/><stop offset="100%" stop-color="#669900"/></linearGradient></defs>
+   <path d="M72 25C72 15 55 10 45 10 28 10 20 20 20 35c0 15 60 15 60 30S65 90 45 90C30 90 20 85 20 75" fill="none" stroke="url(#glassGradient)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M72 25C72 15 55 10 45 10" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+   <path d="M20 75C20 85 30 90 45 90" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+   <text x="72" y="20" font-size="12" font-weight="900" fill="#000" text-anchor="middle">RUB</text>
+   <text x="25" y="95" font-size="12" font-weight="900" fill="#000" text-anchor="middle">USDT</text>
+  </svg>
+ </div>
+ <div class="splash-progress-container"><div class="splash-progress-bar" id="progress-bar"></div></div>
+ <div class="splash-text" id="splash-text">Подключаю SwiftSwap...</div>
 </div>
 
-<div class="wrap">
-<header class="top"><div class="brand"><div class="mini-logo">S</div>SwiftSwap</div><div class="topright"><button class="icon" onclick="theme()">◐</button><button class="icon" onclick="showNotice()">♧</button></div></header>
-<div id="subscriptionLock" class="glass lock hide"><div style="font-size:38px">🔒</div><h2>Требуется подписка</h2><p class="muted">Подпишитесь на канал, чтобы пользоваться SwiftSwap.</p><button class="primary" id="joinChannel">Открыть канал</button><button class="secondary" style="width:100%;margin-top:9px" onclick="checkSub()">Проверить подписку</button></div>
-
-<main id="appContent">
-<section class="page active" id="home">
-<div class="glass hero"><div class="eyebrow">Доступный баланс</div><div class="balance" id="balance">0.00 <small>USDT</small></div><div class="muted" style="font-size:12px">Ваш аккаунт SwiftSwap</div><div class="hero-foot"><span class="tag" id="cashback">Кэшбэк 0%</span><span class="muted" style="font-size:12px" id="greeting">Добро пожаловать</span></div></div>
-<div class="section">Обмен валют</div>
-<div class="glass" style="padding:17px">
-<label class="fieldname">Вы отдаёте</label><div class="amount"><input id="amount" type="number" min="0" step=".01" value="100" oninput="quote()"><span class="currency">USDT</span></div>
-<div class="swap">⇅</div><label class="fieldname">Вы получаете</label><div class="amount"><input id="rub" readonly value="—"><span class="currency">RUB</span></div>
-<div class="rate"><span>Текущий курс</span><b id="rate">—</b></div><button class="primary" onclick="openExchange()">Продолжить обмен&nbsp; ↗</button>
-</div>
-<div class="section">Быстрый доступ</div><div class="grid">
-<button class="tile" onclick="go('history')"><i>↗</i><b>История обменов</b><small>Все операции</small></button>
-<button class="tile" onclick="go('bonus')"><i>✳</i><b>Бонусы и кэшбэк</b><small>Ваши награды</small></button>
-<button class="tile" onclick="go('chat')"><i>◌</i><b>Поддержка</b><small>Связь с оператором</small></button>
-<button class="tile" onclick="go('profile')"><i>⌁</i><b>Пригласить друга</b><small>Реферальная программа</small></button>
-</div>
-<div class="section">Последние операции</div><div id="recent"><div class="empty">Операций пока нет</div></div>
-</section>
-
-<section class="page" id="history"><div class="title">История</div><div id="historyList"></div></section>
-<section class="page" id="bonus"><div class="title">Бонусы</div><div class="glass hero"><div class="eyebrow">Ваш кэшбэк-баланс</div><div class="balance" id="bonusBalance">0.00 <small>USDT</small></div><div class="muted" style="font-size:12px">Начисленные бонусы</div></div><div class="section">Промокод</div><div class="glass" style="padding:17px"><label class="fieldname">Введите промокод</label><input class="input" id="promoCode" placeholder="SWIFT2026"><button class="primary" onclick="activatePromo()">Активировать промокод</button></div><div class="note">Бонусы и кэшбэк начисляются по правилам SwiftSwap.</div></section>
-
-<section class="page" id="chat"><div class="title">Поддержка</div><div class="note" id="chatInfo">Чат открывается после назначения оператора на заявку.</div><select class="input" id="chatOrder" onchange="loadChat()"><option value="">Выберите заявку</option></select><div class="glass"><div class="chatbox" id="chatMessages"><div class="empty">Выберите заявку</div></div><div class="chatline"><input class="input" id="chatText" placeholder="Ваше сообщение…"><button class="primary" style="width:auto;padding:0 17px" onclick="sendChat()">➤</button></div></div></section>
-
-<section class="page" id="profile"><div class="title">Профиль</div><div class="glass hero"><div class="eyebrow">Telegram аккаунт</div><div id="profileName" style="font-size:23px;font-weight:900;margin:10px 0">Пользователь</div><div id="profileId" class="muted" style="font-size:12px">ID: —</div></div><div class="section">Реферальная ссылка</div><div class="glass" style="padding:17px"><div class="muted" id="refLink" style="font-size:12px;word-break:break-all;margin-bottom:14px">Загрузка…</div><button class="primary" onclick="copyRef()">Скопировать ссылку</button></div><div class="section">Настройки</div><button class="secondary" style="width:100%;margin-bottom:9px" onclick="theme()">Сменить тему</button><button class="secondary" style="width:100%" onclick="showNotice()">Уведомления</button></section>
-
-<section class="page" id="owner"><div class="title">Панель владельца</div><div class="grid" id="stats"></div>
-<div class="section">Курсы и лимиты</div><div class="glass" style="padding:16px">
-<label class="label">Малый курс RUB за USDT</label><input class="input" id="rateSmall" type="number" step=".01">
-<label class="label">Большой курс</label><input class="input" id="rateLarge" type="number" step=".01">
-<label class="label">Порог большого курса в RUB</label><input class="input" id="threshold" type="number">
-<label class="label">Минимум USDT</label><input class="input" id="minUsdt" type="number">
-<label class="label">Максимум USDT</label><input class="input" id="maxUsdt" type="number">
-<label class="label">Кэшбэк, %</label><input class="input" id="cashbackPercent" type="number" step=".01">
-<button class="primary" onclick="saveRates()">Сохранить курсы и лимиты</button></div>
-<div class="section">Подписка и приветствие</div><div class="glass" style="padding:16px"><label class="label">Канал, например @mychannel</label><input class="input" id="channel"><label class="label">Ссылка-приглашение</label><input class="input" id="inviteLink"><label class="label">Приветствие бота</label><textarea class="input" id="welcomeText" rows="3"></textarea><button class="primary" onclick="saveOwnerSettings()">Сохранить</button></div>
-<div class="section">Управление операторами</div><div class="glass" style="padding:16px"><input class="input" id="operatorId" type="number" placeholder="Telegram ID оператора"><div class="two"><button class="primary" onclick="changeOperator(true)">Добавить</button><button class="secondary" onclick="changeOperator(false)">Убрать</button></div><div id="operators" style="margin-top:12px"></div></div>
-<div class="section">Промокоды</div><div class="glass" style="padding:16px"><input class="input" id="promoNew" placeholder="Код промокода"><input class="input" id="promoReward" type="number" placeholder="Награда USDT"><input class="input" id="promoLimit" type="number" value="100" placeholder="Лимит активаций"><select class="input" id="promoType"><option value="balance_usdt">Баланс USDT</option><option value="cashback_usdt">Кэшбэк USDT</option></select><button class="primary" onclick="createPromo()">Создать промокод</button></div>
-<div class="section">Пользователи</div><div class="glass" style="padding:16px"><input class="input" id="userSearch" placeholder="ID, username или имя"><button class="secondary" style="width:100%" onclick="searchUsers()">Найти</button><div id="usersList" style="margin-top:12px"></div></div>
-<div class="section">Заявки</div><div id="ownerOrders"></div></section>
-
-<section class="page" id="operator"><div class="title">Панель оператора</div><div class="note">Принимайте заявки, общайтесь с клиентами и подтверждайте перевод только после фактической проверки поступления денег.</div><div id="operatorOrders"></div></section>
-</main>
+<div id="capsule-world" aria-hidden="true">
+ <div class="capsule-track"></div>
+ <div class="capsule-track reverse"></div>
+ <div class="capsule-track fast"></div>
 </div>
 
-<nav class="nav" id="nav">
-<button class="navbtn active" data-page="home" onclick="go('home')"><span>⌂</span>Главная</button>
-<button class="navbtn" data-page="history" onclick="go('history')"><span>↗</span>История</button>
-<button class="navbtn" data-page="bonus" onclick="go('bonus')"><span>✳</span>Бонусы</button>
-<button class="navbtn" data-page="chat" onclick="go('chat')"><span>◌</span>Чат</button>
-<button class="navbtn" data-page="profile" onclick="go('profile')"><span>⌁</span>Профиль</button>
-</nav>
+<div class="app-content" id="app-content">
+ <div class="top-bar">
+  <div class="logo-container"><div class="logo-icon-glass">S</div><div class="logo-text">SwiftSwap</div></div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☼ Тема</button>
+ </div>
 
-<div class="modal" id="exchangeModal"><div class="sheet"><h2>Оформление обмена</h2><p id="exchangeSummary" class="muted" style="font-size:13px"></p><label class="label">ФИО получателя</label><input class="input" id="fullName" placeholder="Иванов Иван Иванович"><label class="label">Телефон</label><input class="input" id="phone" placeholder="+7 900 000-00-00"><label class="label">Банк получения</label><input class="input" id="bank" placeholder="Название банка"><button class="primary" onclick="submitOrder()">Создать заявку</button><button class="secondary" style="width:100%;margin-top:9px" onclick="closeModal()">Отмена</button></div></div>
-<div class="modal" id="noticeModal"><div class="sheet"><h2>Уведомления</h2><p class="muted">Статусы заявок и сообщения поддержки также поступают в Telegram.</p><button class="primary" onclick="closeModal()">Закрыть</button></div></div>
-<div class="toast" id="toast"></div>
+ <div id="screen-home" class="screen active">
+  <div class="balance-wrapper">
+   <div class="greeting"><img src="https://ui-avatars.com/api/?name=U&background=333&color=ccff00" class="avatar" id="user-avatar" alt=""><span>Привет, <span id="user-name">Пользователь</span>!</span></div>
+   <div class="balance-label">Баланс кошелька</div>
+   <div class="balance-value" id="wallet-balance">$0.00</div>
+   <div class="balance-fiat" id="wallet-fiat">Ваш доступный баланс</div>
+   <div class="action-grid">
+    <button class="btn-action accent" onclick="switchScreen('soon')">Пополнить ↘</button>
+    <button class="btn-action" onclick="switchScreen('soon')">Вывести ↗</button>
+   </div>
+  </div>
+  <div class="qr-block">
+   <div class="qr-icon-container"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg></div>
+   <div class="qr-text">Оплачивайте покупки криптой по QR-коду</div>
+   <button class="btn-group" onclick="switchScreen('qr')">Оплатить по QR</button>
+  </div>
+  <div class="feature-card" onclick="switchScreen('profile')" role="button"><div class="feature-title">Мой профиль　›</div><div class="feature-description">Личные данные, реферальная ссылка и настройки аккаунта</div></div>
+ </div>
+
+ <div id="screen-history" class="screen">
+  <h2>История операций</h2>
+  <div class="glass-card" id="history-list"><div class="muted" style="margin:12px 0">Операций пока нет.<br>Здесь будут отображаться ваши обмены и движения средств.</div></div>
+ </div>
+
+ <div id="screen-exchange" class="screen">
+  <h2>Обмен USDT → RUB</h2>
+  <div class="glass-card">
+   <label class="field-label" for="exchange-amount">Сумма обмена, USDT</label>
+   <input class="field" id="exchange-amount" type="number" min="0" step="0.01" placeholder="Например, 100" inputmode="decimal">
+   <label class="field-label" for="exchange-name">ФИО получателя</label>
+   <input class="field" id="exchange-name" type="text" maxlength="120" placeholder="Как в банковских реквизитах">
+   <label class="field-label" for="exchange-phone">Номер телефона</label>
+   <input class="field" id="exchange-phone" type="tel" maxlength="25" placeholder="+7 900 000-00-00">
+   <label class="field-label" for="exchange-bank">Банк получателя</label>
+   <input class="field" id="exchange-bank" type="text" maxlength="80" placeholder="Название банка">
+   <div class="quote-box" id="exchange-quote">Введите сумму, чтобы увидеть предварительный расчёт. Итоговый курс подтвердит оператор.</div>
+   <button class="primary-btn" onclick="submitExchange()">Создать заявку на обмен</button>
+   <div class="feature-description" style="margin-top:12px">После создания заявки оператор свяжется с вами в чате. Не отправляйте USDT до получения инструкций по заявке.</div>
+  </div>
+  <div class="feature-card"><div class="feature-title">Как проходит обмен</div><div class="feature-description">1. Вы оставляете заявку.<br>2. Оператор подтверждает курс и реквизиты.<br>3. Вы отправляете USDT и отмечаете оплату.<br>4. Оператор проверяет поступление и подтверждает выплату RUB.</div></div>
+ </div>
+
+ <div id="screen-bonuses" class="screen">
+  <h2>Бонусы</h2>
+  <div class="feature-card"><div class="feature-icon">🎁</div><div class="feature-title">Ваши бонусы</div><div class="feature-description" id="bonus-description">Активных бонусов пока нет. Информация о начислениях и кешбэке появится здесь.</div></div>
+  <div class="feature-card"><div class="feature-title">Промокод</div><label class="field-label" for="promo-code">Введите промокод</label><input class="field" id="promo-code" maxlength="40" placeholder="Промокод"><button class="primary-btn" style="margin-top:12px" onclick="applyPromo()">Активировать</button></div>
+ </div>
+
+ <div id="screen-services" class="screen">
+  <h2>Услуги</h2><div class="feature-card"><div class="feature-icon">✦</div><div class="feature-title">Дополнительные услуги</div><div class="feature-description">Мы готовим этот раздел. Следите за обновлениями SwiftSwap.</div><div class="status-pill" style="margin-top:14px">СКОРО</div></div>
+ </div>
+
+ <div id="screen-card" class="screen">
+  <h2>Карта</h2><div class="feature-card"><div class="feature-icon">💳</div><div class="feature-title">SwiftSwap Card</div><div class="feature-description">Раздел карты находится в разработке.</div><div class="status-pill" style="margin-top:14px">СКОРО</div></div>
+ </div>
+
+ <div id="screen-qr" class="screen">
+  <button class="back-btn" onclick="switchScreen('home')">← Назад</button><h2>Оплата по QR</h2>
+  <div class="feature-card"><div class="feature-icon">▦</div><div class="feature-title">Оплата по QR-коду</div><div class="feature-description">Функция оплаты по QR пока находится в разработке.</div><div class="status-pill" style="margin-top:14px">СКОРО</div></div>
+ </div>
+
+ <div id="screen-profile" class="screen">
+  <h2>Профиль</h2>
+  <div class="glass-card">
+   <div class="profile-row"><img src="https://ui-avatars.com/api/?name=U&background=333&color=ccff00" class="avatar" id="profile-avatar" alt=""><div><div class="feature-title" id="profile-name">Пользователь</div><div class="feature-description" id="profile-id">Telegram аккаунт</div></div></div>
+   <div class="feature-title">Реферальная программа</div><div class="feature-description" style="margin:7px 0 12px">Приглашайте друзей. Условия и начисления будут отображаться после подключения программы.</div>
+   <button class="primary-btn" onclick="shareReferral()">Пригласить друга</button>
+  </div>
+  <div class="feature-card"><div class="feature-title">Поддержка</div><div class="feature-description">Если нужна помощь по заявке, откройте чат с оператором внутри карточки заявки. Подключение чата появится после интеграции с ботом.</div></div>
+ </div>
+
+ <div id="screen-soon" class="screen">
+  <button class="back-btn" onclick="switchScreen('home')">← Назад</button><h2>Новый раздел</h2>
+  <div class="feature-card" style="text-align:center;margin-top:40px"><div class="feature-icon">✦</div><div class="feature-title">Мы готовим эту функцию</div><div class="feature-description">Скоро здесь появятся новые возможности SwiftSwap.</div><div class="status-pill" style="margin-top:15px">СКОРО!</div></div>
+ </div>
+
+ <nav class="bottom-nav">
+  <div class="nav-item active" onclick="switchScreen('home',this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="nav-label">Кошелёк</span></div>
+  <div class="nav-item" onclick="switchScreen('history',this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg></div><span class="nav-label">История</span></div>
+  <div class="nav-item nav-item-exchange" onclick="switchScreen('exchange',this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></div><span class="nav-label">Обмен</span></div>
+  <div class="nav-item" onclick="switchScreen('bonuses',this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div><span class="nav-label">Бонусы</span></div>
+  <div class="nav-item" onclick="switchScreen('services',this)"><div class="nav-icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg></div><span class="nav-label">Услуги</span></div>
+ </nav>
+</div>
 
 <script>
-/* ВАЖНО: после создания Render Web Service впишите сюда его HTTPS URL без завершающего слэша. */
-const API_BASE="https://YOUR-RENDER-SERVICE.onrender.com";
-const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();tg.setHeaderColor?.("#080a08");tg.setBackgroundColor?.("#080a08")}
-const $=id=>document.getElementById(id);
-let S={user:null,settings:{},orders:[],rate:0};
-const headers=()=>({"Content-Type":"application/json","Authorization":"tma "+(tg?.initData||"")});
-async function api(path,opts={}){if(API_BASE.includes("YOUR-RENDER-SERVICE"))throw Error("Сначала укажите HTTPS-адрес вашего Render-сервиса в API_BASE.");if(!tg?.initData)throw Error("Откройте Mini App через Telegram.");const r=await fetch(API_BASE+path,{...opts,headers:{...headers(),...(opts.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.detail||d.message||"Ошибка API: "+r.status);return d}
-function toast(t){$("toast").textContent=t;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2800)}
-function safe(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function theme(){document.documentElement.classList.toggle("light");try{localStorage.setItem("ss-theme",document.documentElement.classList.contains("light")?"light":"dark")}catch{}}
-try{if(localStorage.getItem("ss-theme")==="light")document.documentElement.classList.add("light")}catch{}
-function go(p){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(p).classList.add("active");document.querySelectorAll(".navbtn").forEach(x=>x.classList.toggle("active",x.dataset.page===p));$("nav").style.display=["owner","operator"].includes(p)?"none":"grid";if(p==="history")loadHistory();if(p==="chat")fillChat();if(p==="owner")loadOwner();if(p==="operator")loadOperator()}
-function showNotice(){$("noticeModal").classList.add("open")}
-function closeModal(){$("noticeModal").classList.remove("open");$("exchangeModal").classList.remove("open")}
-function quote(){let a=Number($("amount").value||0),small=Number(S.settings.rate_small||95),large=Number(S.settings.rate_large||92),threshold=Number(S.settings.limit_small||5000);S.rate=a*small>=threshold?large:small;$("rub").value=(a*S.rate).toLocaleString("ru-RU",{maximumFractionDigits:2});$("rate").textContent=S.rate.toFixed(2)+" RUB"}
-function orderCard(o){let labels={pending:"Ожидает оператора",assigned:"Оператор назначен",waiting_payment:"Ожидает оплату",waiting_confirm:"Проверка оплаты",completed:"Завершено",rejected:"Отклонено",cancelled:"Отменено"};return `<div class="rowitem" onclick="selectOrder(${o.id})"><div><b>Заявка #${o.id}</b><small>${Number(o.amount_usdt).toFixed(2)} USDT → ${Number(o.amount_rub).toFixed(2)} RUB · ${safe(o.created_at||"")}</small></div><span class="status">${labels[o.status]||safe(o.status)}</span></div>`}
-function renderOrders(){let h=S.orders.slice(0,5).map(orderCard).join("")||'<div class="empty">Операций пока нет</div>';$("recent").innerHTML=h}
-async function refresh(){let d=await api("/api/bootstrap");S.user=d.user;S.settings=d.settings||{};S.orders=d.orders||[];let u=S.user;$("balance").innerHTML=Number(u.balance_usdt||0).toFixed(2)+' <small>USDT</small>';$("bonusBalance").innerHTML=Number(u.cashback_usdt||0).toFixed(2)+' <small>USDT</small>';$("cashback").textContent="Кэшбэк "+(S.settings.cashback_percent||0)+"%";$("greeting").textContent="Привет, "+(u.first_name||u.username||"пользователь");$("profileName").textContent=u.first_name||u.username||"Пользователь";$("profileId").textContent="Telegram ID: "+u.user_id;$("refLink").textContent="https://t.me/"+(S.settings.bot_username||"SwiftSwap_app_bot")+"?start="+u.user_id;renderOrders();quote();if(["owner","operator"].includes(u.role)){if(!document.querySelector('[data-page="staff"]')){let b=document.createElement("button");b.className="navbtn";b.dataset.page="staff";b.innerHTML="<span>⚙</span>Панель";b.onclick=()=>go(u.role==="owner"?"owner":"operator");$("nav").appendChild(b)}}}
-function openExchange(){let a=Number($("amount").value);if(!a||a<Number(S.settings.min_usdt||5)||a>Number(S.settings.max_usdt||100000)){toast("Сумма не входит в установленные лимиты");return}$("exchangeSummary").textContent=a+" USDT → "+$("rub").value+" RUB · курс "+S.rate;$("exchangeModal").classList.add("open")}
-async function submitOrder(){try{let body={amount_usdt:Number($("amount").value),full_name:$("fullName").value.trim(),phone:$("phone").value.trim(),bank:$("bank").value.trim()};if(!body.full_name||!body.phone||!body.bank)throw Error("Заполните все поля");let d=await api("/api/orders",{method:"POST",body:JSON.stringify(body)});closeModal();toast("Заявка #"+d.order_id+" создана");await refresh();go("history")}catch(e){toast(e.message)}}
-async function loadHistory(){try{let d=await api("/api/orders/history");$("historyList").innerHTML=d.orders.map(orderCard).join("")||'<div class="empty">История пуста</div>'}catch(e){toast(e.message)}}
-function fillChat(){ $("chatOrder").innerHTML='<option value="">Выберите заявку</option>'+S.orders.map(o=>`<option value="${o.id}">#${o.id} · ${safe(o.status)}</option>`).join("")}
-function selectOrder(id){go("chat");fillChat();$("chatOrder").value=id;loadChat()}
-async function loadChat(){let id=$("chatOrder").value;if(!id)return;try{let d=await api("/api/messages/"+id);$("chatMessages").innerHTML=d.messages.map(m=>`<div class="bubble ${m.sender_id===S.user.user_id?"mine":""}">${safe(m.text)}<small style="display:block;opacity:.55;margin-top:5px">${safe(m.created_at)}</small></div>`).join("")||'<div class="empty">Сообщений пока нет</div>';$("chatMessages").scrollTop=$("chatMessages").scrollHeight}catch(e){toast(e.message)}}
-async function sendChat(){let id=Number($("chatOrder").value),text=$("chatText").value.trim();if(!id||!text)return;try{await api("/api/messages/send",{method:"POST",body:JSON.stringify({order_id:id,text})});$("chatText").value="";await loadChat()}catch(e){toast(e.message)}}
-async function activatePromo(){try{let d=await api("/api/promos/activate",{method:"POST",body:JSON.stringify({code:$("promoCode").value})});toast("Начислено "+d.reward_value+" USDT");$("promoCode").value="";await refresh()}catch(e){toast(e.message)}}
-async function loadOwner(){try{let d=await api("/api/owner/overview");$("stats").innerHTML=`<div class="tile"><b>${d.stats.users}</b><small>Пользователей</small></div><div class="tile"><b>${d.stats.orders}</b><small>Заявок</small></div><div class="tile"><b>${d.stats.pending}</b><small>Активных заявок</small></div>`;$("operators").innerHTML=d.operators.map(x=>`<div class="rowitem"><b>${safe(x.first_name||x.username||"Оператор")}<small>${x.user_id}</small></b></div>`).join("")||'<div class="empty">Операторов нет</div>';$("ownerOrders").innerHTML=d.latest_orders.map(orderCard).join("")||'<div class="empty">Заявок нет</div>';for(let [k,id] of [["rate_small","rateSmall"],["rate_large","rateLarge"],["limit_small","threshold"],["min_usdt","minUsdt"],["max_usdt","maxUsdt"],["cashback_percent","cashbackPercent"],["sub_channel","channel"],["sub_invite_link","inviteLink"],["welcome_text","welcomeText"]])$(id).value=S.settings[k]||""}catch(e){toast(e.message)}}
-async function saveOne(key,value){return api("/api/owner/settings",{method:"POST",body:JSON.stringify({key,value:String(value)})})}
-async function saveRates(){try{for(let [k,id] of [["rate_small","rateSmall"],["rate_large","rateLarge"],["limit_small","threshold"],["min_usdt","minUsdt"],["max_usdt","maxUsdt"],["cashback_percent","cashbackPercent"]])await saveOne(k,$(id).value);toast("Курсы и лимиты сохранены");await refresh()}catch(e){toast(e.message)}}
-async function saveOwnerSettings(){try{for(let [k,id] of [["sub_channel","channel"],["sub_invite_link","inviteLink"],["welcome_text","welcomeText"]])await saveOne(k,$(id).value);toast("Настройки сохранены");await refresh()}catch(e){toast(e.message)}}
-async function changeOperator(enabled){try{await api("/api/owner/operators",{method:"POST",body:JSON.stringify({user_id:Number($("operatorId").value),enabled})});toast("Роль оператора изменена");loadOwner()}catch(e){toast(e.message)}}
-async function createPromo(){try{await api("/api/owner/promos",{method:"POST",body:JSON.stringify({code:$("promoNew").value,reward_type:$("promoType").value,reward_value:Number($("promoReward").value),activations_limit:Number($("promoLimit").value)})});toast("Промокод создан");$("promoNew").value=""}catch(e){toast(e.message)}}
-async function searchUsers(){try{let d=await api("/api/owner/users?q="+encodeURIComponent($("userSearch").value));$("usersList").innerHTML=d.users.map(x=>`<div class="rowitem"><div><b>${safe(x.first_name||x.username||"Пользователь")}</b><small>ID ${x.user_id} · @${safe(x.username||"—")} · ${safe(x.role)}</small><small>Баланс ${Number(x.balance_usdt).toFixed(2)} USDT · ${x.is_blocked?"Заблокирован":"Активен"}</small></div><button class="secondary" onclick="blockUser(${x.user_id},${!x.is_blocked})">${x.is_blocked?"Разблокировать":"Блокировать"}</button></div>`).join("")||'<div class="empty">Никого не найдено</div>'}catch(e){toast(e.message)}}
-async function blockUser(id,blocked){try{await api("/api/owner/users/block",{method:"POST",body:JSON.stringify({user_id:id,blocked})});toast("Статус пользователя изменён");searchUsers()}catch(e){toast(e.message)}}
-async function loadOperator(){try{let d=await api("/api/operator/orders");$("operatorOrders").innerHTML=d.orders.map(o=>`<div class="rowitem" style="display:block"><b>Заявка #${o.id}</b><small>${o.amount_usdt} USDT → ${o.amount_rub} RUB · ${safe(o.status)}</small><div class="two" style="margin-top:10px">${o.status==="pending"?`<button class="primary" onclick="operatorAccept(${o.id})">Принять</button>`:""}${o.status==="waiting_confirm"?`<button class="primary" onclick="operatorComplete(${o.id})">Подтвердить перевод</button>`:""}<button class="secondary" onclick="go('chat');fillChat();$('chatOrder').value=${o.id};loadChat()">Открыть чат</button></div></div>`).join("")||'<div class="empty">Нет активных заявок</div>'}catch(e){toast(e.message)}}
-async function operatorAccept(id){try{await api("/api/operator/orders/"+id+"/accept",{method:"POST"});toast("Заявка назначена вам");loadOperator()}catch(e){toast(e.message)}}
-async function operatorComplete(id){if(!confirm("Подтверждаете, что деньги действительно поступили?"))return;try{await api("/api/operator/orders/"+id+"/complete",{method:"POST"});toast("Заявка завершена");loadOperator()}catch(e){toast(e.message)}}
-async function checkSub(){try{let d=await api("/api/subscription/check");if(d.subscribed){$("subscriptionLock").classList.add("hide");$("appContent").classList.remove("hide");await refresh()}else toast("Подписка ещё не обнаружена")}catch(e){toast(e.message)}}
-async function copyRef(){let t=$("refLink").textContent;try{await navigator.clipboard.writeText(t);toast("Ссылка скопирована")}catch{toast(t)}}
-async function boot(){let messages=["Проверяем Telegram-подпись…","Проверяем обязательную подписку…","Загружаем курсы и баланс…","Подготавливаем SwiftSwap…"],i=0;let timer=setInterval(()=>$("loadingText").textContent=messages[i++%messages.length],900);try{await refresh();let sub=await api("/api/subscription/check");if(sub.required&&!sub.subscribed){$("appContent").classList.add("hide");$("subscriptionLock").classList.remove("hide");$("joinChannel").onclick=()=>{let link=sub.invite_link||("https://t.me/"+String(sub.channel||"").replace("@",""));if(tg)tg.openTelegramLink(link);else location.href=link}}else{$("subscriptionLock").classList.add("hide");$("appContent").classList.remove("hide")}}catch(e){$("loadingText").textContent=e.message;toast(e.message)}finally{clearInterval(timer);setTimeout(()=>$("splash").classList.add("hide"),650)}}
-boot();
+'use strict';
+const tg = window.Telegram?.WebApp || null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e) {} }
+
+const $ = id => document.getElementById(id);
+const splash = $('splash');
+const progressBar = $('progress-bar');
+const splashText = $('splash-text');
+const appContent = $('app-content');
+const capsuleWorld = $('capsule-world');
+
+function setTheme(theme) {
+ document.body.classList.toggle('light-theme', theme === 'light');
+ try { localStorage.setItem('swiftswap-theme', theme); } catch(e) {}
+ if (tg) { try { tg.setHeaderColor(theme === 'light' ? '#f2f2f7' : '#000000'); tg.setBackgroundColor(theme === 'light' ? '#f2f2f7' : '#000000'); } catch(e) {} }
+}
+function toggleTheme() { setTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light'); }
+try {
+ const saved = localStorage.getItem('swiftswap-theme');
+ if (saved) setTheme(saved);
+ else if ((tg && tg.colorScheme === 'light') || (!tg && window.matchMedia('(prefers-color-scheme: light)').matches)) setTheme('light');
+} catch(e) {}
+
+const user = tg?.initDataUnsafe?.user || null;
+if (user) {
+ const displayName = [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
+ $('user-name').textContent = displayName;
+ $('profile-name').textContent = displayName;
+ $('profile-id').textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
+ if (user.photo_url) { $('user-avatar').src = user.photo_url; $('profile-avatar').src = user.photo_url; }
+}
+
+function setCapsules(mode) {
+ if (!capsuleWorld) return;
+ const soon = mode === 'soon';
+ const rows = capsuleWorld.querySelectorAll('.capsule-track');
+ rows.forEach((row) => {
+  row.replaceChildren();
+  const words = Array.from({length:12}, () => soon ? 'СКОРО!' : 'SWIFTSWAP');
+  words.forEach(word => {
+   const item = document.createElement('div');
+   item.className = 'capsule' + (soon ? ' soon' : '');
+   item.textContent = word;
+   row.appendChild(item);
+  });
+ });
+ capsuleWorld.style.opacity = soon ? '.30' : '.19';
+ capsuleWorld.dataset.mode = mode;
+}
+
+function switchScreen(name, element) {
+ const target = $('screen-' + name);
+ if (!target) return;
+ document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+ document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+ target.classList.add('active');
+ if (element) element.classList.add('active');
+ else {
+  const nav = document.querySelector('.nav-item[onclick*="' + name + '"]');
+  if (nav) nav.classList.add('active');
+ }
+ const development = ['services','card','qr','soon'].includes(name);
+ setCapsules(development ? 'soon' : 'brand');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showSplash() {
+ const steps = [
+  ['Подключаю SwiftSwap...', 25],
+  ['Проверяю Telegram-профиль...', 55],
+  ['Подготавливаю интерфейс...', 82],
+  ['Добро пожаловать!', 100]
+ ];
+ let index = 0;
+ const tick = () => {
+  if (index >= steps.length) {
+   setTimeout(() => { splash.classList.add('hidden'); appContent.classList.add('loaded'); }, 250);
+   return;
+  }
+  splashText.textContent = steps[index][0];
+  progressBar.style.width = steps[index][1] + '%';
+  index++;
+  setTimeout(tick, 330);
+ };
+ tick();
+}
+setCapsules('brand');
+showSplash();
+
+/* Предварительный расчёт интерфейса. Окончательный курс и заявка должны подтверждаться сервером. */
+const amountInput = $('exchange-amount');
+amountInput.addEventListener('input', () => {
+ const amount = Number(amountInput.value);
+ const quote = $('exchange-quote');
+ if (!Number.isFinite(amount) || amount <= 0) {
+  quote.textContent = 'Введите сумму, чтобы увидеть предварительный расчёт. Итоговый курс подтвердит оператор.';
+  return;
+ }
+ quote.textContent = 'Сумма: ' + amount.toLocaleString('ru-RU',{maximumFractionDigits:8}) +
+  ' USDT. Предварительный расчёт курса будет доступен после подключения актуальных настроек сервера.';
+});
+
+function submitExchange() {
+ const amount = Number($('exchange-amount').value);
+ const fullName = $('exchange-name').value.trim();
+ const phone = $('exchange-phone').value.trim();
+ const bank = $('exchange-bank').value.trim();
+ if (!tg || !tg.initData) {
+  alert('Откройте SwiftSwap через Telegram, чтобы создать заявку.');
+  return;
+ }
+ if (!Number.isFinite(amount) || amount <= 0 || !fullName || !phone || !bank) {
+  alert('Заполните сумму, ФИО, телефон и банк.');
+  return;
+ }
+ alert('Форма заполнена. Создание заявки станет доступно после подключения защищённого серверного API.');
+}
+
+function applyPromo() {
+ const code = $('promo-code').value.trim();
+ if (!code) { alert('Введите промокод.'); return; }
+ alert('Проверка промокода станет доступна после подключения серверного API.');
+}
+
+function shareReferral() {
+ if (!tg) { alert('Откройте приложение через Telegram.'); return; }
+ const link = 'https://t.me/SwiftSwap_app_bot';
+ try {
+  tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('Присоединяйся к SwiftSwap!'));
+ } catch(e) { alert('Ссылка: ' + link); }
+}
 </script>
 </body>
-  </html>
+ </html>
