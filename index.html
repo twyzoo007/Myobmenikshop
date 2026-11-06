@@ -6,216 +6,314 @@
     <title>SwiftSwap</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* --- ПЕРЕМЕННЫЕ ТЕМ --- */
         :root {
-            /* Переменные для темной темы по умолчанию */
-            --bg-color: #0f0f11;
-            --card-bg: #1c1c1e;
+            /* Темная тема (по умолчанию) */
+            --bg-color: #000000;
+            --card-bg: #1a1a1a;
             --text-color: #ffffff;
-            --subtext-color: #8e8e93;
-            --input-bg: #2c2c2e;
-            --btn-sell: #ff3b30;
-            --btn-buy: #34c759;
-            --border-color: #3a3a3c;
+            --subtext-color: #888888;
+            --input-bg: #2a2a2a;
+            --accent-color: #a3e635; /* Салатовый */
+            --accent-hover: #84cc16;
+            --border-color: #333333;
+            --danger: #ff3b30;
         }
 
-        /* Автоматическая светлая тема, если в Telegram выбрана она */
+        /* Светлая тема */
         body.light-theme {
-            --bg-color: #f2f2f7;
-            --card-bg: #ffffff;
+            --bg-color: #ffffff;
+            --card-bg: #f4f4f5;
             --text-color: #000000;
-            --subtext-color: #6e6e73;
-            --input-bg: #e5e5ea;
-            --border-color: #d1d1d6;
+            --subtext-color: #666666;
+            --input-bg: #e4e4e7;
+            --accent-color: #65a30d; 
+            --accent-hover: #4d7c0f;
+            --border-color: #d4d4d8;
         }
 
-        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            padding: 0;
+            padding-bottom: 80px; /* Отступ для нижнего меню */
             transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
         }
 
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            width: 100%; 
-            max-width: 400px; 
-            margin-bottom: 20px; 
-        }
+        /* --- ЭКРАНЫ --- */
+        .screen { display: none; padding: 20px; flex-direction: column; align-items: center; }
+        .screen.active { display: flex; animation: fadeIn 0.3s; }
         
-        .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
-        .status { color: #34c759; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .status-dot { width: 8px; height: 8px; background: #34c759; border-radius: 50%; }
-
-        .card { 
-            background: var(--card-bg); 
-            border-radius: 24px; 
-            padding: 20px; 
-            width: 100%; 
-            max-width: 400px; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
-            margin-bottom: 20px; 
-            transition: background-color 0.3s;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .input-container { 
-            background: var(--input-bg); 
-            border-radius: 16px; 
-            padding: 16px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 12px;
-            border: 1px solid transparent;
-            transition: border-color 0.2s;
-        }
+        /* --- ОБЩИЕ ЭЛЕМЕНТЫ --- */
+        .header { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin-bottom: 24px; }
+        .logo { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--accent-color); }
+        .status { color: var(--text-color); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 8px; height: 8px; background: var(--accent-color); border-radius: 50%; box-shadow: 0 0 8px var(--accent-color); }
 
-        .input-container:focus-within { border-color: #007aff; }
+        .card { background: var(--card-bg); border-radius: 24px; padding: 20px; width: 100%; max-width: 400px; margin-bottom: 16px; transition: background-color 0.3s; }
+        .title { font-size: 18px; font-weight: 700; margin-bottom: 16px; align-self: flex-start; }
 
-        .input-container input { 
-            background: transparent; 
-            border: none; 
-            color: var(--text-color); 
-            font-size: 28px; 
-            font-weight: 600;
-            width: 70%; 
-            outline: none; 
-        }
-        
+        /* --- ЭЛЕМЕНТЫ ВВОДА --- */
+        .input-container { background: var(--input-bg); border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border: 1px solid transparent; transition: border-color 0.2s, background-color 0.3s; }
+        .input-container:focus-within { border-color: var(--accent-color); }
+        .input-container input { background: transparent; border: none; color: var(--text-color); font-size: 28px; font-weight: 600; width: 70%; outline: none; }
         .input-container input::placeholder { color: var(--subtext-color); }
-
-        .currency-badge { 
-            background: var(--card-bg); 
-            padding: 6px 12px; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            font-weight: 600; 
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .rate-row { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 13px; 
-            color: var(--subtext-color); 
-            margin-bottom: 20px; 
-            padding: 0 4px;
-        }
-
-        .btn { 
-            border: none; 
-            border-radius: 16px; 
-            padding: 18px; 
-            font-size: 17px; 
-            font-weight: 700; 
-            width: 100%; 
-            cursor: pointer; 
-            transition: transform 0.1s, opacity 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .btn:active { transform: scale(0.98); opacity: 0.8; }
-        .btn-primary { background: var(--btn-sell); color: white; }
+        .currency-badge { background: var(--card-bg); padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 700; color: var(--text-color); border: 1px solid var(--border-color); }
         
-        /* Мини-навигация снизу (как в приложении) */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid var(--border-color);
-            border-radius: 20px 20px 0 0;
-        }
-        
-        .nav-item { color: var(--subtext-color); font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .nav-item.active { color: #007aff; }
-        .nav-icon { font-size: 20px; }
+        .rate-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--subtext-color); margin-bottom: 20px; padding: 0 4px; }
+        .rate-value { color: var(--accent-color); font-weight: 600; }
+
+        /* --- КНОПКИ --- */
+        .btn { border: none; border-radius: 16px; padding: 18px; font-size: 17px; font-weight: 700; width: 100%; max-width: 400px; cursor: pointer; transition: transform 0.1s, background-color 0.2s; display: flex; justify-content: center; align-items: center; background: var(--accent-color); color: #000000; }
+        .btn:active { transform: scale(0.98); background: var(--accent-hover); }
+        .btn-danger { background: var(--input-bg); color: var(--danger); }
+
+        /* --- ГЛАВНЫЙ ЭКРАН (БАЛАНС) --- */
+        .balance-card { text-align: center; padding: 30px 20px; }
+        .balance-title { font-size: 14px; color: var(--subtext-color); margin-bottom: 8px; }
+        .balance-amount { font-size: 42px; font-weight: 800; color: var(--text-color); margin-bottom: 20px; }
+        .balance-amount span { font-size: 24px; color: var(--subtext-color); }
+        .action-row { display: flex; gap: 10px; width: 100%; }
+        .action-btn { flex: 1; background: var(--input-bg); padding: 12px; border-radius: 12px; text-align: center; font-weight: 600; font-size: 14px; color: var(--text-color); cursor: pointer; border: none; }
+
+        /* --- ИСТОРИЯ --- */
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .history-item:last-child { border-bottom: none; }
+        .history-info { display: flex; flex-direction: column; gap: 4px; }
+        .history-type { font-weight: 600; font-size: 15px; }
+        .history-date { font-size: 12px; color: var(--subtext-color); }
+        .history-amount { font-weight: 700; font-size: 15px; }
+        .amount-positive { color: var(--accent-color); }
+        .amount-negative { color: var(--danger); }
+        .empty-state { text-align: center; color: var(--subtext-color); padding: 20px; font-size: 14px; }
+
+        /* --- ПРОФИЛЬ --- */
+        .profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        .avatar { width: 60px; height: 60px; background: var(--accent-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 800; color: #000; }
+        .profile-info { display: flex; flex-direction: column; }
+        .profile-name { font-size: 18px; font-weight: 700; }
+        .profile-id { font-size: 13px; color: var(--subtext-color); }
+        .menu-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: var(--card-bg); border-radius: 16px; margin-bottom: 10px; width: 100%; max-width: 400px; font-weight: 500; cursor: pointer; }
+
+        /* --- НИЖНЕЕ МЕНЮ --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px 0 20px 0; border-top: 1px solid var(--border-color); border-radius: 20px 20px 0 0; transition: background-color 0.3s; z-index: 100; }
+        .nav-item { color: var(--subtext-color); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-icon { font-size: 22px; }
 
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">SwiftSwap</div>
-        <div class="status"><div class="status-dot"></div> Онлайн</div>
-    </div>
 
-    <div class="card">
-        <div class="input-container">
-            <input type="number" id="rub-amount" placeholder="0" oninput="calcUsdt()">
-            <div class="currency-badge">RUB</div>
+    <!-- ЭКРАН 1: ГЛАВНАЯ -->
+    <div id="screen-home" class="screen active">
+        <div class="header">
+            <div class="logo">SwiftSwap</div>
+            <div class="status"><div class="status-dot"></div> Онлайн</div>
         </div>
         
-        <div class="rate-row">
-            <span>Курс обмена:</span>
-            <span id="rate-display">95.00 ₽</span>
+        <div class="card balance-card">
+            <div class="balance-title">Ваш баланс</div>
+            <div class="balance-amount" id="user-balance">0.00 <span>USDT</span></div>
+            <div class="action-row">
+                <button class="action-btn" onclick="switchScreen('exchange')">Обменять</button>
+                <button class="action-btn" onclick="switchScreen('profile')">Профиль</button>
+            </div>
         </div>
 
-        <div class="input-container">
-            <input type="text" id="usdt-amount" placeholder="0" readonly style="color: var(--btn-buy);">
-            <div class="currency-badge">USDT</div>
-        </div>
-
-        <div class="rate-row" style="margin-bottom: 0;">
-            <span>Комиссия сервиса:</span>
-            <span>0 ₽</span>
+        <div class="card">
+            <div class="title">Быстрые действия</div>
+            <div class="menu-item" onclick="switchScreen('exchange')">
+                <span>💵 Продать USDT</span>
+                <span style="color: var(--subtext-color)">→</span>
+            </div>
+            <div class="menu-item" onclick="switchScreen('history')">
+                <span>📜 История операций</span>
+                <span style="color: var(--subtext-color)">→</span>
+            </div>
         </div>
     </div>
 
-    <button class="btn btn-primary" onclick="createOrder()">Продать USDT</button>
+    <!-- ЭКРАН 2: ОБМЕН (Продажа) -->
+    <div id="screen-exchange" class="screen">
+        <div class="header">
+            <div class="logo">Обмен</div>
+        </div>
 
-    <!-- Нижнее меню для красоты -->
+        <div class="card">
+            <div class="input-container">
+                <input type="number" id="rub-amount" placeholder="0" oninput="calcUsdt()">
+                <div class="currency-badge">RUB</div>
+            </div>
+            
+            <div class="rate-row">
+                <span>Курс обмена:</span>
+                <span class="rate-value" id="rate-display">95.00 ₽</span>
+            </div>
+
+            <div class="input-container">
+                <input type="text" id="usdt-amount" placeholder="0" readonly style="color: var(--accent-color);">
+                <div class="currency-badge">USDT</div>
+            </div>
+
+            <div class="rate-row" style="margin-bottom: 0;">
+                <span>Комиссия сервиса:</span>
+                <span>0 ₽</span>
+            </div>
+        </div>
+
+        <button class="btn" onclick="createOrder()">Продать USDT</button>
+    </div>
+
+    <!-- ЭКРАН 3: ИСТОРИЯ -->
+    <div id="screen-history" class="screen">
+        <div class="header">
+            <div class="logo">История</div>
+        </div>
+        <div class="card">
+            <!-- Здесь в будущем будут подгружаться заявки из БД -->
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-type">Продажа USDT</div>
+                    <div class="history-date">Сегодня, 14:30</div>
+                </div>
+                <div class="history-amount amount-positive">+1 000 ₽</div>
+            </div>
+            <div class="history-item">
+                <div class="history-info">
+                    <div class="history-type">Вывод USDT</div>
+                    <div class="history-date">Вчера, 10:15</div>
+                </div>
+                <div class="history-amount amount-negative">-10.00 USDT</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 4: ПРОФИЛЬ -->
+    <div id="screen-profile" class="screen">
+        <div class="header">
+            <div class="logo">Профиль</div>
+        </div>
+        
+        <div class="profile-header">
+            <div class="avatar" id="avatar-letter">U</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profile-name">Пользователь</div>
+                <div class="profile-id" id="profile-id">ID: 000000</div>
+            </div>
+        </div>
+
+        <div class="menu-item">
+            <span>🎁 Промокод</span>
+            <span style="color: var(--subtext-color)">→</span>
+        </div>
+        <div class="menu-item">
+            <span>👥 Реферальная программа</span>
+            <span style="color: var(--subtext-color)">→</span>
+        </div>
+        <div class="menu-item">
+            <span>🛠 Поддержка</span>
+            <span style="color: var(--subtext-color)">→</span>
+        </div>
+    </div>
+
+    <!-- НИЖНЕЕ МЕНЮ -->
     <div class="bottom-nav">
-        <div class="nav-item active"><div class="nav-icon">🏠</div>Главная</div>
-        <div class="nav-item"><div class="nav-icon">🔄</div>Обмен</div>
-        <div class="nav-item"><div class="nav-icon">👤</div>Профиль</div>
+        <div class="nav-item active" onclick="switchScreen('home')" id="nav-home">
+            <div class="nav-icon">🏠</div>Главная
+        </div>
+        <div class="nav-item" onclick="switchScreen('exchange')" id="nav-exchange">
+            <div class="nav-icon">🔄</div>Обмен
+        </div>
+        <div class="nav-item" onclick="switchScreen('history')" id="nav-history">
+            <div class="nav-icon">📜</div>История
+        </div>
+        <div class="nav-item" onclick="switchScreen('profile')" id="nav-profile">
+            <div class="nav-icon">👤</div>Профиль
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); 
-        
-        // Применяем тему Telegram (светлая или темная)
-        if (tg.colorScheme === 'light') {
-            document.body.classList.add('light-theme');
-            tg.setHeaderColor('#f2f2f7');
-            tg.setBackgroundColor('#f2f2f7');
-        } else {
-            tg.setHeaderColor('#0f0f11');
-            tg.setBackgroundColor('#0f0f11');
+
+        // --- ТЕМА ---
+        function applyTheme() {
+            let isDark = true;
+            if (window.Telegram && window.Telegram.WebApp) {
+                isDark = (tg.colorScheme === 'dark');
+            } else {
+                isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            if (isDark) {
+                document.body.classList.remove('light-theme');
+                if (window.Telegram) tg.setHeaderColor('#000000');
+            } else {
+                document.body.classList.add('light-theme');
+                if (window.Telegram) tg.setHeaderColor('#ffffff');
+            }
+        }
+        applyTheme();
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+
+        // --- ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ ---
+        if (window.Telegram && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('profile-name').innerText = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            document.getElementById('profile-id').innerText = `ID: ${user.id}`;
+            document.getElementById('avatar-letter').innerText = user.first_name.charAt(0).toUpperCase();
         }
 
-        // Расчет USDT
+        // --- НАВИГАЦИЯ ПО ЭКРАНАМ ---
+        function switchScreen(screenName) {
+            // Скрываем все экраны
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Убираем активный класс со всех кнопок меню
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Показываем нужный экран и подсвечиваем кнопку
+            document.getElementById(`screen-${screenName}`).classList.add('active');
+            document.getElementById(`nav-${screenName}`).classList.add('active');
+            
+            // Прокрутка вверх
+            window.scrollTo(0,0);
+        }
+
+        // --- РАСЧЕТ USDT ---
         function calcUsdt() {
             const rub = parseFloat(document.getElementById('rub-amount').value) || 0;
-            const rate = 95.0; 
+            const rate = 95.0; // В будущем будем брать из БД через API
             const usdt = (rub / rate).toFixed(2);
             document.getElementById('usdt-amount').value = usdt;
         }
 
-        // Создание заявки
+        // --- СОЗДАНИЕ ЗАЯВКИ ---
         function createOrder() {
             const rub = parseFloat(document.getElementById('rub-amount').value) || 0;
             if (rub < 500) {
-                tg.showAlert("Минимальная сумма обмена: 500 ₽");
+                if (window.Telegram) tg.showAlert("Минимальная сумма обмена: 500 ₽");
+                else alert("Минимальная сумма обмена: 500 ₽");
                 return;
             }
-            tg.sendData(JSON.stringify({ action: 'create_order', rub_amount: rub }));
-            tg.close();
+            
+            // Отправляем данные в бота
+            if (window.Telegram) {
+                tg.sendData(JSON.stringify({ action: 'create_order', rub_amount: rub }));
+                tg.close();
+            } else {
+                alert(`Заявка на ${rub} ₽ создана! (Открыто вне Telegram)`);
+            }
         }
     </script>
 </body>
-          </html>
+</html>
