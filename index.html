@@ -7,12 +7,13 @@
 <title>SwiftSwap</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{color-scheme:dark;--bg:#050600;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.035);--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.07);--text:#f8f9f3;--muted:#969a8d;--lime:#ccff00;--limeText:#101400;--shadow:0 14px 38px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.13)}
-body.light-theme{color-scheme:light;--bg:#f1f2ec;--panel:rgba(255,255,255,.72);--panel2:rgba(255,255,255,.48);--line:rgba(255,255,255,.9);--line2:rgba(0,0,0,.08);--text:#15170e;--muted:#73766c;--lime:#b4e600;--limeText:#111500;--shadow:0 14px 38px rgba(20,25,0,.07),inset 0 1px 0 rgba(255,255,255,.95)}
+:root{color-scheme:dark;--bg:#050600;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.035);--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.07);--text:#f8f9f3;--muted:#969a8d;--lime:#ccff00;--limeText:#101400}
+body.light-theme{color-scheme:light;--bg:#f1f2ec;--panel:rgba(255,255,255,.72);--panel2:rgba(255,255,255,.48);--line:rgba(255,255,255,.9);--line2:rgba(0,0,0,.08);--text:#15170e;--muted:#73766c;--lime:#b4e600;--limeText:#111500}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{min-height:100%;background:var(--bg);overscroll-behavior-y:auto;scroll-behavior:auto}
 body{margin:0;min-height:100%;padding:0 0 calc(94px + env(safe-area-inset-bottom));overflow-x:clip;touch-action:pan-y;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;transition:background .25s,color .25s}
-button,input{font:inherit}button{cursor:pointer}
+button,input{font:inherit}
+button{cursor:pointer}
 #capsule-world{display:none!important;position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict}
 .capsule-track{display:flex;width:max-content;flex:none;will-change:transform;animation:drift 52s linear infinite}
 .capsule-track.reverse{animation-name:driftBack;animation-duration:58s}
@@ -91,6 +92,7 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 .staff-row{padding:12px 0;border-bottom:1px solid var(--line2);font-size:13px;line-height:1.5}
 .staff-row:last-child{border:0}
 .staff-meta{color:var(--muted);font-size:11px}
+.staff-badge{display:inline-block;padding:4px 8px;border-radius:99px;background:rgba(204,255,0,.1);color:var(--lime);font-size:10px;font-weight:800}
 .captcha-overlay{position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72)}
 .captcha-overlay.open{display:flex}
 .captcha-box{width:min(100%,390px);padding:23px;border:1px solid var(--line);border-radius:26px;background:var(--bg);box-shadow:0 24px 80px rgba(0,0,0,.48)}
@@ -104,7 +106,11 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 .captcha-option:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 .captcha-error{min-height:18px;color:#ff7777;font-size:12px;margin:-5px 0 10px}
 .captcha-box .btn{width:100%}
-@media(max-width:360px){.amount{font-size:39px}.screen{padding-left:12px;padding-right:12px}.section-card{padding:16px}}
+@media(max-width:360px){.screen{padding-left:13px;padding-right:13px}.amount{font-size:41px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+button,input,textarea{touch-action:manipulation}
+.field{min-width:0}
+.screen{width:100%}
 </style>
 </head>
 <body>
@@ -114,17 +120,28 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
  <div class="splash-logo">
   <svg viewBox="0 0 220 150" role="img" aria-label="SwiftSwap — две встречные стрелки">
    <defs>
-    <linearGradient id="glassArrow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffd8"/><stop offset=".24" stop-color="#d9ff64"/><stop offset=".58" stop-color="#a9e900"/><stop offset="1" stop-color="#557900"/></linearGradient>
-    <linearGradient id="glassEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".48" stop-color="#d9ff8a" stop-opacity=".25"/><stop offset="1" stop-color="#8bb900" stop-opacity=".8"/></linearGradient>
-    <filter id="arrowGlow" x="-30%" y="-40%" width="160%" height="180%"><feGaussianBlur stdDeviation="5"/></filter>
+    <linearGradient id="glassArrow" x1="0" y1="0" x2="1" y2="1">
+     <stop offset="0" stop-color="#f5ffd8"/>
+     <stop offset=".24" stop-color="#d9ff64"/>
+     <stop offset=".58" stop-color="#a9e900"/>
+     <stop offset="1" stop-color="#557900"/>
+    </linearGradient>
+    <linearGradient id="glassEdge" x1="0" y1="0" x2="0" y2="1">
+     <stop offset="0" stop-color="#fff" stop-opacity=".95"/>
+     <stop offset=".48" stop-color="#d9ff8a" stop-opacity=".25"/>
+     <stop offset="1" stop-color="#8bb900" stop-opacity=".8"/>
+    </linearGradient>
+    <filter id="arrowGlow" x="-30%" y="-40%" width="160%" height="180%">
+     <feGaussianBlur stdDeviation="5"/>
+    </filter>
    </defs>
    <path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="#aaff00" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".26" filter="url(#arrowGlow)"/>
-   <path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
-   <path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="#aaff00" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".22" filter="url(#arrowGlow)"/>
-   <path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
-   <path d="M79 19H145M76 115H139" stroke="url(#glassEdge)" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>
-   <text x="185" y="18" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">RUB</text>
-   <text x="34" y="143" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">USDT</text>
+   <path d="M42 43H137Q151 43 151 29V17L195 49L151 81V69Q151 57 137 57H82Q54 57 54 83" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M178 107H83Q69 107 69 121V133L25 101L69 69V81Q69 93 83 93H138Q166 93 166 67" fill="none" stroke="#aaff00" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".22" filter="url(#arrowGlow)"/>
+   <path d="M178 107H83Q69 107 69 121V133L25 101L69 69V81Q69 93 83 93H138Q166 93 166 67" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M48 36H133M85 100H155" stroke="url(#glassEdge)" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>
+   <text x="184" y="17" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">RUB</text>
+   <text x="30" y="145" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">USDT</text>
   </svg>
  </div>
  <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
@@ -133,14 +150,25 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 
 <div id="app">
  <header class="topbar">
-  <div class="brand"><div class="brand-mark"><svg viewBox="0 0 220 150" aria-hidden="true"><path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="#ccff00" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/><path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="#a9df00" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>SwiftSwap</span></div>
+  <div class="brand">
+   <div class="brand-mark">
+    <svg viewBox="0 0 220 150" aria-hidden="true">
+     <path d="M42 43H137Q151 43 151 29V17L195 49L151 81V69Q151 57 137 57H82Q54 57 54 83" fill="none" stroke="#ccff00" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+     <path d="M178 107H83Q69 107 69 121V133L25 101L69 69V81Q69 93 83 93H138Q166 93 166 67" fill="none" stroke="#a9df00" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+   </div>
+   <span>SwiftSwap</span>
+  </div>
   <button class="theme-btn" id="theme-btn" type="button">◐ Тема</button>
  </header>
 
  <main>
   <section class="screen active" id="screen-home">
    <div class="glass balance">
-    <div class="greeting"><img class="avatar" id="user-avatar" src="https://ui-avatars.com/api/?name=S&background=30352a&color=ccff00" alt=""><span>Привет, <b id="user-name">Пользователь</b>!</span></div>
+    <div class="greeting">
+     <img class="avatar" id="user-avatar" src="https://ui-avatars.com/api/?name=S&background=30352a&color=ccff00" alt="">
+     <span>Привет, <b id="user-name">Пользователь</b>!</span>
+    </div>
     <div class="label">Баланс кошелька</div>
     <div class="amount" id="wallet-balance">$0.00</div>
     <div class="balance-sub">Ваш текущий баланс SwiftSwap</div>
@@ -149,12 +177,24 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
      <button class="btn" type="button" data-soon>Вывести ↗</button>
     </div>
    </div>
+
    <div class="glass section-card qr-card">
     <div class="qr-symbol">▦</div>
-    <div><div class="card-heading">Оплата по QR-коду</div><div class="card-copy">Оплата по QR-коду скоро будет доступна</div><span class="pill">СКОРО!</span></div>
+    <div>
+     <div class="card-heading">Оплата по QR-коду</div>
+     <div class="card-copy">Оплата по QR-коду скоро будет доступна</div>
+     <span class="pill">СКОРО!</span>
+    </div>
    </div>
+
    <div class="glass group-card">
-    <div class="group-top"><div class="group-icon">✦</div><div><div class="card-heading">Заходи в нашу группу</div><div class="card-copy">SwiftSwap — оставайся на связи с нашим сообществом.</div></div></div>
+    <div class="group-top">
+     <div class="group-icon">✦</div>
+     <div>
+      <div class="card-heading">Заходи в нашу группу</div>
+      <div class="card-copy">SwiftSwap — оставайся на связи с нашим сообществом.</div>
+     </div>
+    </div>
     <div class="group-benefits">
      <div class="benefit"><span class="tick">✦</span><div><b>Новости и обновления</b>Узнавай первым о новых функциях и возможностях сервиса.</div></div>
      <div class="benefit"><span class="tick">✦</span><div><b>Важные объявления</b>Следи за изменениями курсов, графика и условий работы.</div></div>
@@ -162,8 +202,10 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
     </div>
     <button class="btn primary" style="width:100%" id="group-btn" type="button">Перейти в группу ↗</button>
    </div>
+
    <div class="glass section-card" role="button" tabindex="0" id="profile-shortcut">
-    <div class="card-heading">Мой профиль　›</div><div class="card-copy">Личные данные и настройки аккаунта</div>
+    <div class="card-heading">Мой профиль　›</div>
+    <div class="card-copy">Личные данные и настройки аккаунта</div>
    </div>
   </section>
 
@@ -187,31 +229,66 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
     <button class="btn primary" style="width:100%" id="create-order" type="button">Создать заявку</button>
     <p class="card-copy" style="margin:12px 2px 0">Не отправляйте USDT до получения подтверждения и реквизитов от оператора.</p>
    </div>
-   <div class="glass section-card"><div class="card-heading">Как проходит обмен</div><div class="card-copy">1. Оставляете заявку.<br>2. Оператор подтверждает курс и реквизиты.<br>3. Отправляете USDT и отмечаете оплату.<br>4. Оператор проверяет поступление и подтверждает выплату RUB.</div></div>
+   <div class="glass section-card">
+    <div class="card-heading">Как проходит обмен</div>
+    <div class="card-copy">1. Оставляете заявку.<br>2. Оператор подтверждает курс и реквизиты.<br>3. Отправляете USDT и отмечаете оплату.<br>4. Оператор проверяет поступление и подтверждает выплату RUB.</div>
+   </div>
   </section>
 
   <section class="screen" id="screen-bonuses">
    <h2>Бонусы</h2>
    <div class="glass section-card"><div class="card-icon">🎁</div><div class="card-heading">Ваши бонусы</div><div class="card-copy">Начисления и кешбэк будут отображаться здесь.</div></div>
-   <div class="glass section-card"><div class="card-heading">Промокод</div><label class="field-label" for="promo-code">Введите промокод</label><input class="field" id="promo-code" maxlength="40" placeholder="Промокод"><button class="btn primary" style="width:100%;margin-top:12px" id="promo-btn">Активировать</button></div>
+   <div class="glass section-card">
+    <div class="card-heading">Промокод</div>
+    <label class="field-label" for="promo-code">Введите промокод</label>
+    <input class="field" id="promo-code" maxlength="40" placeholder="Промокод">
+    <button class="btn primary" style="width:100%;margin-top:12px" id="promo-btn">Активировать</button>
+   </div>
   </section>
 
   <section class="screen" id="screen-services">
-   <h2>Услуги</h2><div class="glass section-card"><div class="card-icon">✦</div><div class="card-heading">Новые возможности</div><div class="card-copy">Мы готовим дополнительные услуги SwiftSwap. Скоро здесь появятся новые функции.</div><span class="pill">СКОРО!</span></div>
+   <h2>Услуги</h2>
+   <div class="glass section-card">
+    <div class="card-icon">✦</div>
+    <div class="card-heading">Новые возможности</div>
+    <div class="card-copy">Мы готовим дополнительные услуги SwiftSwap. Скоро здесь появятся новые функции.</div>
+    <span class="pill">СКОРО!</span>
+   </div>
   </section>
 
   <section class="screen" id="screen-map">
-   <h2>Карта</h2><div class="glass section-card"><div class="card-icon">⌖</div><div class="card-heading">Карта SwiftSwap</div><div class="card-copy">Раздел находится в разработке.</div><span class="pill">СКОРО!</span></div>
+   <h2>Карта</h2>
+   <div class="glass section-card">
+    <div class="card-icon">⌖</div>
+    <div class="card-heading">Карта SwiftSwap</div>
+    <div class="card-copy">Раздел находится в разработке.</div>
+    <span class="pill">СКОРО!</span>
+   </div>
   </section>
 
   <section class="screen" id="screen-profile">
    <h2>Профиль</h2>
    <div class="glass section-card">
-    <div class="profile-head"><img class="avatar" id="profile-avatar" src="https://ui-avatars.com/api/?name=S&background=30352a&color=ccff00" alt=""><div><div class="card-heading" id="profile-name">Пользователь</div><div class="card-copy" id="profile-id">Telegram</div></div></div>
-    <div class="card-heading">Реферальная программа</div><p class="card-copy">Приглашай друзей в SwiftSwap. Информация о начислениях появится после запуска программы.</p>
+    <div class="profile-head">
+     <img class="avatar" id="profile-avatar" src="https://ui-avatars.com/api/?name=S&background=30352a&color=ccff00" alt="">
+     <div>
+      <div class="card-heading" id="profile-name">Пользователь</div>
+      <div class="card-copy" id="profile-id">Telegram</div>
+     </div>
+    </div>
+    <div class="card-heading">Реферальная программа</div>
+    <p class="card-copy">Приглашай друзей в SwiftSwap. Информация о начислениях появится после запуска программы.</p>
     <button class="btn primary" style="width:100%" id="invite-btn">Пригласить друга</button>
    </div>
-   <div class="glass section-card"><div class="card-heading">Поддержка</div><div class="card-copy">По вопросам обмена используй чат с оператором после создания заявки.</div></div>
+   <div class="glass section-card">
+    <div class="card-heading">Поддержка</div>
+    <div class="card-copy">По вопросам обмена используй чат с оператором после создания заявки.</div>
+   </div>
+   <div class="glass section-card" id="staff-entry-card" hidden>
+    <div class="card-heading">Служебный доступ</div>
+    <div class="card-copy">Панель управления SwiftSwap доступна владельцу и операторам.</div>
+    <button class="btn primary" style="width:100%;margin-top:12px" id="open-staff-panel" type="button">Открыть панель</button>
+   </div>
   </section>
 
   <section class="screen" id="screen-staff">
@@ -220,8 +297,766 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
    <div class="staff-grid" id="staff-actions"></div>
    <div class="glass section-card" id="staff-content"><div class="empty">Выберите раздел панели.</div></div>
   </section>
+
   <section class="screen" id="screen-soon">
-   <h2>Скоро в SwiftSwap</h2><div class="glass section-card"><div class="card-icon">✧</div><div class="card-heading">Готовим для тебя новую функцию</div><div class="card-copy">Мы работаем над этим разделом. Следи за обновлениями в группе SwiftSwap.</div><span class="pill">СКОРО!</span></div>
+   <h2>Скоро в SwiftSwap</h2>
+   <div class="glass section-card">
+    <div class="card-icon">✧</div>
+    <div class="card-heading">Готовим для тебя новую функцию</div>
+    <div class="card-copy">Мы работаем над этим разделом. Следи за обновлениями в группе SwiftSwap.</div>
+    <span class="pill">СКОРО!</span>
+   </div>
    <button class="btn" style="width:100%" data-screen="home">Вернуться на главную</button>
   </section>
  </main>
+
+ <nav class="bottom-nav" aria-label="Основная навигация">
+  <button class="nav-item active" data-screen="home"><span class="nav-icon">⌂</span><span>Кошелёк</span></button>
+  <button class="nav-item" data-screen="history"><span class="nav-icon">◷</span><span>История</span></button>
+  <button class="nav-item exchange" data-screen="exchange"><span class="nav-icon">⇄</span><span>Обмен</span></button>
+  <button class="nav-item" data-screen="bonuses"><span class="nav-icon">♧</span><span>Бонусы</span></button>
+  <button class="nav-item" data-screen="services"><span class="nav-icon">▦</span><span>Услуги</span></button>
+ </nav>
+</div>
+<div class="captcha-overlay" id="captcha-overlay" role="dialog" aria-modal="true" aria-labelledby="captcha-title">
+ <div class="captcha-box">
+  <div class="captcha-kicker">SwiftSwap · проверка</div>
+  <h2 class="captcha-title" id="captcha-title">Подтверди, что ты человек</h2>
+  <p class="captcha-hint" id="captcha-hint">Выбери все фрукты на картинках, чтобы активировать приглашение.</p>
+  <div class="captcha-grid" id="captcha-grid"></div>
+  <div class="captcha-error" id="captcha-error" aria-live="polite"></div>
+  <button class="btn primary" id="captcha-submit" type="button">Подтвердить</button>
+ </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(() => {
+ 'use strict';
+
+ const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+ if (tg) {
+  try {
+   tg.ready();
+   tg.expand();
+  } catch (_) {}
+ }
+
+ const $ = id => document.getElementById(id);
+ const GROUP_URL = '';
+ const API_BASE = (window.SWIFTSWAP_API_BASE || '').replace(/\/$/,'');
+ const initData = tg && tg.initData ? tg.initData : '';
+
+ let toastTimer;
+ let bootstrapData = null;
+ let staffRole = 'user';
+ let captchaChallenge = null;
+ let captchaSelected = new Set();
+
+ function toast(message) {
+  const node = $('toast');
+  node.textContent = message;
+  node.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.classList.remove('show'), 2600);
+ }
+
+ const api = async (path, options = {}) => {
+  if (!API_BASE) {
+   throw new Error('API ещё не подключён. Нужен публичный HTTPS API.');
+  }
+
+  const response = await fetch(API_BASE + path, {
+   ...options,
+   headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'tma ' + initData,
+    ...(options.headers || {})
+   }
+  });
+
+  const data = await response.json().catch(() => ({
+   detail: 'Некорректный ответ API'
+  }));
+
+  if (!response.ok) {
+   throw new Error(data.detail || 'Ошибка API');
+  }
+
+  return data;
+ };
+
+ const money = value => Number(value || 0).toLocaleString('ru-RU', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+ });
+
+ const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+ }[char]));
+
+ function switchScreen(name) {
+  const target = $('screen-' + name);
+  if (!target) return;
+
+  document.querySelectorAll('.screen').forEach(screen => {
+   screen.classList.toggle('active', screen === target);
+  });
+
+  document.querySelectorAll('.nav-item').forEach(button => {
+   button.classList.toggle('active', button.dataset.screen === name);
+  });
+
+  window.scrollTo({top:0,behavior:'instant'});
+
+  if (tg) {
+   try { tg.HapticFeedback.selectionChanged(); } catch (_) {}
+  }
+ }
+
+ document.querySelectorAll('[data-screen]').forEach(element => {
+  element.addEventListener('click', () => switchScreen(element.dataset.screen));
+ });
+
+ document.querySelectorAll('.nav-item').forEach(element => {
+  element.addEventListener('click', () => switchScreen(element.dataset.screen));
+ });
+
+ document.querySelectorAll('[data-soon]').forEach(element => {
+  element.addEventListener('click', () => switchScreen('soon'));
+ });
+
+ $('profile-shortcut').addEventListener('click', () => switchScreen('profile'));
+
+ $('profile-shortcut').addEventListener('keydown', event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+   switchScreen('profile');
+  }
+ });
+
+ function setTheme(theme) {
+  document.body.classList.toggle('light-theme', theme === 'light');
+
+  try {
+   localStorage.setItem('swiftswap-theme', theme);
+  } catch (_) {}
+
+  if (tg) {
+   try {
+    tg.setHeaderColor(theme === 'light' ? '#f1f2ec' : '#050600');
+    tg.setBackgroundColor(theme === 'light' ? '#f1f2ec' : '#050600');
+   } catch (_) {}
+  }
+ }
+
+ try {
+  const savedTheme = localStorage.getItem('swiftswap-theme');
+
+  if (savedTheme) {
+   setTheme(savedTheme);
+  } else if (
+   (tg && tg.colorScheme === 'light') ||
+   (!tg && matchMedia('(prefers-color-scheme: light)').matches)
+  ) {
+   setTheme('light');
+  }
+ } catch (_) {}
+
+ $('theme-btn').addEventListener('click', () => {
+  setTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light');
+ });
+
+ const user = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
+
+ if (user) {
+  const name = [user.first_name,user.last_name].filter(Boolean).join(' ') || 'Пользователь';
+
+  $('user-name').textContent = name;
+  $('profile-name').textContent = name;
+  $('profile-id').textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
+
+  if (user.photo_url) {
+   $('user-avatar').src = user.photo_url;
+   $('profile-avatar').src = user.photo_url;
+  }
+ }
+
+ $('group-btn').addEventListener('click', () => {
+  if (!GROUP_URL) {
+   toast('Ссылку на группу добавим, когда ты её пришлёшь.');
+   return;
+  }
+
+  if (tg) {
+   tg.openTelegramLink(GROUP_URL);
+  } else {
+   window.open(GROUP_URL,'_blank','noopener');
+  }
+ });
+
+ $('invite-btn').addEventListener('click', () => {
+  const botLink = 'https://t.me/SwiftSwap_app_bot';
+  const shareLink = 'https://t.me/share/url?url=' +
+   encodeURIComponent(botLink) +
+   '&text=' +
+   encodeURIComponent('Присоединяйся к SwiftSwap!');
+
+  if (tg) {
+   tg.openTelegramLink(shareLink);
+  } else if (navigator.clipboard) {
+   navigator.clipboard.writeText(botLink);
+   toast('Ссылка скопирована');
+  }
+ });
+
+ $('exchange-amount').addEventListener('input', () => {
+  const amount = Number($('exchange-amount').value);
+
+  $('exchange-quote').textContent =
+   Number.isFinite(amount) && amount > 0
+    ? 'Сумма: ' + amount.toLocaleString('ru-RU') +
+      ' USDT. Точный курс подтвердит оператор.'
+    : 'Введите сумму для предварительного расчёта. Точный курс подтвердит оператор.';
+ });
+
+ function renderHistory(orders) {
+  const box = $('screen-history').querySelector('.section-card');
+
+  if (!orders.length) {
+   box.innerHTML = '<div class="empty">Пока операций нет.</div>';
+   return;
+  }
+
+  box.innerHTML = orders.map(order => `
+   <div class="list-row">
+    <b>Заявка #${esc(order.id)}</b><br>
+    ${money(order.amount_usdt)} USDT → ${money(order.amount_rub)} RUB<br>
+    <span class="staff-meta">${esc(order.status)} · ${esc(order.created_at || '')}</span>
+   </div>
+  `).join('');
+ }
+
+ function staffButton(label, key) {
+  const button = document.createElement('button');
+  button.className = 'staff-action';
+  button.textContent = label;
+  button.type = 'button';
+  button.addEventListener('click', () => staffSection(key));
+  return button;
+ }
+
+ async function initAppData() {
+  if (!tg || !initData || !API_BASE) return;
+
+  try {
+   bootstrapData = await api('/api/bootstrap');
+   staffRole = bootstrapData.user.role || 'user';
+
+   if (bootstrapData.pending_referral) {
+    startReferralCaptcha();
+   }
+
+   $('wallet-balance').textContent = '$' + money(bootstrapData.user.balance_usdt);
+   renderHistory(bootstrapData.orders || []);
+
+   if (staffRole === 'owner' || staffRole === 'operator') {
+    $('staff-entry-card').hidden = false;
+
+    $('staff-title').textContent =
+     staffRole === 'owner' ? 'Панель владельца' : 'Панель оператора';
+
+    const nav = document.createElement('button');
+    nav.className = 'nav-item';
+    nav.dataset.screen = 'staff';
+    nav.type = 'button';
+    nav.innerHTML = '<span class="nav-icon">⚙</span><span>Панель</span>';
+
+    document.querySelector('.bottom-nav').appendChild(nav);
+
+    nav.addEventListener('click', async () => {
+     switchScreen('staff');
+     await loadStaff();
+    });
+
+    $('staff-summary').innerHTML =
+     '<div class="card-heading">Доступ подтверждён</div>' +
+     '<div class="card-copy">' +
+     (staffRole === 'owner'
+      ? 'Полные права владельца'
+      : 'Только назначенные оператору заявки') +
+     '</div>';
+
+    const items = staffRole === 'owner'
+     ? [
+       ['📊 Обзор','overview'],
+       ['📦 Заказы','orders'],
+       ['👥 Пользователи','users'],
+       ['🧑‍💻 Операторы','operators'],
+       ['💱 Курсы и лимиты','rates'],
+       ['📣 Подписка и график','subscription'],
+       ['🎟 Промокоды','promos'],
+       ['🎁 Бонусы','bonuses'],
+       ['✏️ Приветствие','texts']
+      ]
+     : [
+       ['📦 Мои заявки','orders']
+      ];
+
+    $('staff-actions').replaceChildren(
+     ...items.map(item => staffButton(item[0],item[1]))
+    );
+   }
+  } catch (error) {
+   toast(error.message);
+  }
+ }
+
+ $('open-staff-panel').addEventListener('click', async () => {
+  try {
+   if (!bootstrapData) {
+    bootstrapData = await api('/api/bootstrap');
+   }
+
+   staffRole = bootstrapData.user.role || 'user';
+
+   if (!['owner','operator'].includes(staffRole)) {
+    toast('Нет доступа к панели');
+    return;
+   }
+
+   switchScreen('staff');
+   await loadStaff();
+  } catch (error) {
+   toast(error.message);
+  }
+ });
+
+ async function loadStaff() {
+  await staffSection(staffRole === 'owner' ? 'overview' : 'orders');
+ }
+
+ async function staffSection(key) {
+  const box = $('staff-content');
+  box.innerHTML = '<div class="empty">Загрузка…</div>';
+
+  try {
+   if (key === 'overview') {
+    const data = await api('/api/owner/overview');
+
+    box.innerHTML =
+     '<div class="card-heading">Статистика</div>' +
+     '<div class="staff-row">Пользователи: <b>' + data.stats.users + '</b></div>' +
+     '<div class="staff-row">Заявки: <b>' + data.stats.orders + '</b></div>' +
+     '<div class="staff-row">Активные: <b>' + data.stats.pending + '</b></div>' +
+     data.latest_orders.map(order =>
+      '<div class="staff-row">#' + order.id + ' · ' +
+      money(order.amount_usdt) + ' USDT · ' +
+      esc(order.status) + '</div>'
+     ).join('');
+   }
+
+   else if (key === 'orders') {
+    const data = await api('/api/operator/orders');
+
+    box.innerHTML = data.orders.length
+     ? data.orders.map(order =>
+      '<div class="staff-row">' +
+      '<b>Заявка #' + order.id + '</b><br>' +
+      money(order.amount_usdt) + ' USDT → ' +
+      money(order.amount_rub) + ' RUB<br>' +
+      '<span class="staff-meta">' + esc(order.status) +
+      ' · ID ' + order.user_id + '</span>' +
+      (order.status === 'pending'
+       ? '<button class="btn primary" data-accept="' + order.id + '">Принять</button>'
+       : '') +
+      (order.status === 'waiting_confirm'
+       ? '<button class="btn primary" data-done="' + order.id + '">Подтвердить поступление</button>'
+       : '') +
+      '</div>'
+     ).join('')
+     : '<div class="empty">Активных заявок нет.</div>';
+
+    box.querySelectorAll('[data-accept]').forEach(button => {
+     button.addEventListener('click', async () => {
+      try {
+       await api('/api/operator/orders/' + button.dataset.accept + '/accept', {
+        method:'POST'
+       });
+       await staffSection('orders');
+      } catch (error) {
+       toast(error.message);
+      }
+     });
+    });
+
+    box.querySelectorAll('[data-done]').forEach(button => {
+     button.addEventListener('click', async () => {
+      if (!confirm('Подтверждаешь фактическое поступление средств?')) return;
+
+      try {
+       await api('/api/operator/orders/' + button.dataset.done + '/complete', {
+        method:'POST'
+       });
+       await staffSection('orders');
+      } catch (error) {
+       toast(error.message);
+      }
+     });
+    });
+   }
+
+   else if (key === 'users') {
+    box.innerHTML =
+     '<div class="staff-form">' +
+     '<input class="field" id="user-q" placeholder="ID, username или имя">' +
+     '<button class="btn primary" id="user-find">Найти</button>' +
+     '<div id="user-list"></div>' +
+     '</div>';
+
+    const findUsers = async () => {
+     const data = await api('/api/owner/users?q=' +
+      encodeURIComponent($('user-q').value));
+
+     $('user-list').innerHTML = data.users.map(user =>
+      '<div class="staff-row">' +
+      '<b>' + esc(user.first_name || 'Пользователь') + '</b> ' +
+      (user.username ? '@' + esc(user.username) : '') +
+      '<br>ID ' + user.user_id + ' · ' +
+      money(user.balance_usdt) + ' USDT<br>' +
+      '<span class="staff-meta">' + esc(user.role) + ' · ' +
+      (user.is_blocked ? 'заблокирован' : 'активен') + '</span>' +
+      '<button class="btn" data-block="' + user.user_id +
+      '" data-v="' + (user.is_blocked ? 0 : 1) + '">' +
+      (user.is_blocked ? 'Разблокировать' : 'Заблокировать') +
+      '</button></div>'
+     ).join('') || '<div class="empty">Не найдено</div>';
+
+     $('user-list').querySelectorAll('[data-block]').forEach(button => {
+      button.addEventListener('click', async () => {
+       try {
+        await api('/api/owner/users/block', {
+         method:'POST',
+         body:JSON.stringify({
+          user_id:Number(button.dataset.block),
+          blocked:button.dataset.v === '1'
+         })
+        });
+        await findUsers();
+       } catch (error) {
+        toast(error.message);
+       }
+      });
+     });
+    };
+
+    $('user-find').addEventListener('click', findUsers);
+    await findUsers();
+   }
+
+   else if (key === 'operators') {
+    const data = await api('/api/owner/overview');
+
+    box.innerHTML =
+     data.operators.map(operator =>
+      '<div class="staff-row">' +
+      esc(operator.first_name || 'Оператор') +
+      ' · ID ' + operator.user_id +
+      ' <button class="btn" data-off="' + operator.user_id + '">Убрать</button>' +
+      '</div>'
+     ).join('') +
+     '<div class="staff-form">' +
+     '<input class="field" id="op-id" type="number" placeholder="Telegram ID">' +
+     '<button class="btn primary" id="op-add">Добавить</button>' +
+     '</div>';
+
+    $('op-add').addEventListener('click', async () => {
+     try {
+      await api('/api/owner/operators', {
+       method:'POST',
+       body:JSON.stringify({
+        user_id:Number($('op-id').value),
+        enabled:true
+       })
+      });
+      await staffSection('operators');
+     } catch (error) {
+      toast(error.message);
+     }
+    });
+
+    box.querySelectorAll('[data-off]').forEach(button => {
+     button.addEventListener('click', async () => {
+      try {
+       await api('/api/owner/operators', {
+        method:'POST',
+        body:JSON.stringify({
+         user_id:Number(button.dataset.off),
+         enabled:false
+        })
+       });
+       await staffSection('operators');
+      } catch (error) {
+       toast(error.message);
+      }
+     });
+    });
+   }
+
+   else if (['rates','subscription','bonuses','texts'].includes(key)) {
+    const keys = {
+     rates:['rate_small','rate_large','limit_small','min_usdt','max_usdt'],
+     subscription:['sub_channel','sub_invite_link','work_start','work_end'],
+     bonuses:['cashback_percent','referral_reward'],
+     texts:['welcome_text']
+    }[key];
+
+    const labels = {
+     rate_small:'Курс до порога',
+     rate_large:'Курс после порога',
+     limit_small:'Порог RUB',
+     min_usdt:'Минимум USDT',
+     max_usdt:'Максимум USDT',
+     sub_channel:'Канал',
+     sub_invite_link:'Ссылка канала',
+     work_start:'Начало работы МСК',
+     work_end:'Конец работы МСК',
+     cashback_percent:'Кешбэк %',
+     referral_reward:'Реферальный бонус',
+     welcome_text:'Текст приветствия'
+    };
+
+    box.innerHTML = '<div class="staff-form">' +
+     keys.map(key =>
+      '<label class="field-label">' + labels[key] +
+      '<input class="field" data-k="' + key +
+      '" value="' + esc(bootstrapData.settings[key] || '') + '">' +
+      '</label>'
+     ).join('') +
+     '<button class="btn primary" id="settings-save">Сохранить</button>' +
+     '</div>';
+
+    $('settings-save').addEventListener('click', async () => {
+     try {
+      for (const input of box.querySelectorAll('[data-k]')) {
+       await api('/api/owner/settings', {
+        method:'POST',
+        body:JSON.stringify({
+         key:input.dataset.k,
+         value:input.value
+        })
+       });
+      }
+
+      bootstrapData = await api('/api/bootstrap');
+      toast('Настройки сохранены');
+     } catch (error) {
+      toast(error.message);
+     }
+    });
+   }
+
+   else if (key === 'promos') {
+    box.innerHTML =
+     '<div class="staff-form">' +
+     '<input class="field" id="pc" placeholder="Промокод">' +
+     '<input class="field" id="pv" type="number" min="0.01" step="0.01" placeholder="Награда USDT">' +
+     '<input class="field" id="pl" type="number" min="1" value="1" placeholder="Лимит активаций">' +
+     '<button class="btn primary" id="ps">Создать промокод</button>' +
+     '</div>';
+
+    $('ps').addEventListener('click', async () => {
+     try {
+      await api('/api/owner/promos', {
+       method:'POST',
+       body:JSON.stringify({
+        code:$('pc').value,
+        reward_type:'balance_usdt',
+        reward_value:Number($('pv').value),
+        activations_limit:Number($('pl').value)
+       })
+      });
+      toast('Промокод создан');
+     } catch (error) {
+      toast(error.message);
+     }
+    });
+   }
+
+   else {
+    box.innerHTML = '<div class="empty">Раздел пока не подключён к API.</div>';
+   }
+  } catch (error) {
+   box.innerHTML = '<div class="empty">' + esc(error.message) + '</div>';
+  }
+ }
+  $('create-order').addEventListener('click', async () => {
+  const body = {
+   amount_usdt:Number($('exchange-amount').value),
+   full_name:$('exchange-name').value.trim(),
+   phone:$('exchange-phone').value.trim(),
+   bank:$('exchange-bank').value.trim()
+  };
+
+  if (!body.amount_usdt || !body.full_name || !body.phone || !body.bank) {
+   toast('Заполни все поля заявки.');
+   return;
+  }
+
+  try {
+   const result = await api('/api/orders', {
+    method:'POST',
+    body:JSON.stringify(body)
+   });
+
+   toast('Заявка #' + result.order_id + ' создана');
+
+   const history = await api('/api/orders/history');
+   renderHistory(history.orders);
+   switchScreen('history');
+  } catch (error) {
+   toast(error.message);
+  }
+ });
+
+ $('promo-btn').addEventListener('click', async () => {
+  const code = $('promo-code').value.trim();
+
+  if (!code) {
+   toast('Введи промокод');
+   return;
+  }
+
+  try {
+   const result = await api('/api/promos/activate', {
+    method:'POST',
+    body:JSON.stringify({code})
+   });
+
+   toast('Начислено ' + money(result.reward_value) + ' USDT');
+  } catch (error) {
+   toast(error.message);
+  }
+ });
+
+ // Реферальная капча: задание и правильные ответы выдаёт сервер.
+ const captchaOverlay = $('captcha-overlay');
+ const captchaGrid = $('captcha-grid');
+
+ function renderCaptcha(challenge) {
+  captchaChallenge = challenge;
+  captchaSelected.clear();
+  captchaGrid.replaceChildren();
+
+  $('captcha-title').textContent = 'Подтверди, что ты человек';
+  $('captcha-hint').textContent =
+   challenge.prompt || 'Выбери все подходящие картинки.';
+  $('captcha-error').textContent = '';
+
+  challenge.options.forEach((item,index) => {
+   const button = document.createElement('button');
+   button.type = 'button';
+   button.className = 'captcha-option';
+   button.textContent = item.emoji;
+   button.setAttribute('aria-label','Вариант ' + (index + 1));
+
+   button.addEventListener('click', () => {
+    if (captchaSelected.has(item.id)) {
+     captchaSelected.delete(item.id);
+     button.classList.remove('selected');
+    } else {
+     captchaSelected.add(item.id);
+     button.classList.add('selected');
+    }
+   });
+
+   captchaGrid.appendChild(button);
+  });
+
+  captchaOverlay.classList.add('open');
+ }
+
+ async function startReferralCaptcha() {
+  try {
+   const challenge = await api('/api/referrals/captcha');
+   renderCaptcha(challenge);
+  } catch (error) {
+   $('captcha-error').textContent = error.message;
+   captchaOverlay.classList.add('open');
+  }
+ }
+
+ $('captcha-submit').addEventListener('click', async () => {
+  if (!captchaChallenge) {
+   $('captcha-error').textContent =
+    'Не удалось загрузить проверку. Перезапусти приложение.';
+   return;
+  }
+
+  const button = $('captcha-submit');
+  button.disabled = true;
+  button.textContent = 'Проверяем…';
+
+  try {
+   const result = await api('/api/referrals/complete', {
+    method:'POST',
+    body:JSON.stringify({
+     challenge_id:captchaChallenge.challenge_id,
+     selected:[...captchaSelected]
+    })
+   });
+
+   captchaOverlay.classList.remove('open');
+   toast(result.message || 'Проверка пройдена. Приглашение засчитано.');
+
+   bootstrapData = await api('/api/bootstrap');
+  } catch (error) {
+   $('captcha-error').textContent = error.message;
+
+   try {
+    const nextChallenge = await api('/api/referrals/captcha');
+    renderCaptcha(nextChallenge);
+   } catch (_) {}
+  } finally {
+   button.disabled = false;
+   button.textContent = 'Подтвердить';
+  }
+ });
+
+ if (API_BASE) {
+  initAppData();
+ }
+
+ // Анимация загрузки: заполняется один раз, затем открывает приложение.
+ const fill = $('progress-fill');
+ const caption = $('splash-caption');
+
+ requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+   fill.style.width = '100%';
+   caption.textContent = 'Подготавливаем интерфейс...';
+  });
+ });
+
+ fill.addEventListener('transitionend', event => {
+  if (event.propertyName !== 'width') return;
+
+  caption.textContent = 'Добро пожаловать в SwiftSwap';
+
+  setTimeout(() => {
+   $('splash').classList.add('hide');
+  },320);
+ },{once:true});
+
+ setTimeout(() => {
+  $('splash').classList.add('hide');
+ },3200);
+
+})();
+</script>
+</body>
+</html>
