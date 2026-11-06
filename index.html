@@ -140,39 +140,52 @@
         }
         .btn-group:active { transform: scale(0.97); }
 
-        /* Экран "Скоро" (Сетка) */
-        .soon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            padding-bottom: 20px;
-        }
-        .soon-item {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px 10px;
+        /* --- ДИАГОНАЛЬНАЯ ЛЕНТА С КАПСУЛАМИ "СКОРО!" --- */
+        .soon-marquee-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 70vh;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 14px;
-            font-weight: 800;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            animation: fadeInUp 0.5s ease-out forwards;
-            opacity: 0;
+            gap: 20px;
+            transform: rotate(-15deg) scale(1.2); /* Поворот всей ленты */
         }
-        .soon-item:nth-child(1) { animation-delay: 0.05s; }
-        .soon-item:nth-child(2) { animation-delay: 0.1s; }
-        .soon-item:nth-child(3) { animation-delay: 0.15s; }
-        .soon-item:nth-child(4) { animation-delay: 0.2s; }
-        .soon-item:nth-child(5) { animation-delay: 0.25s; }
-        .soon-item:nth-child(6) { animation-delay: 0.3s; }
-        .soon-item:nth-child(7) { animation-delay: 0.35s; }
-        .soon-item:nth-child(8) { animation-delay: 0.4s; }
-        .soon-item:nth-child(9) { animation-delay: 0.45s; }
+
+        .soon-line {
+            display: flex;
+            white-space: nowrap;
+            animation: scrollDiagonal 15s linear infinite;
+        }
+        
+        .soon-line.reverse {
+            animation-direction: reverse;
+            animation-duration: 20s;
+        }
+
+        .soon-capsule {
+            background: var(--accent);
+            color: var(--accent-text);
+            padding: 10px 24px;
+            border-radius: 50px; /* Капсула */
+            font-size: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-right: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        @keyframes scrollDiagonal {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
 
         /* Нижнее меню */
         .bottom-nav { 
@@ -231,6 +244,9 @@
         }
 
         .nav-icon-wrap:active { transform: scale(1.2); }
+        
+        /* Заголовки экранов */
+        h2 { position: relative; z-index: 2; margin-top: 10px; font-size: 22px; font-weight: 800; }
     </style>
 </head>
 <body>
@@ -265,7 +281,6 @@
             </div>
         </div>
 
-        <!-- Блок Оплаты по QR (Заменяет старый "Групповой" блок) -->
         <div class="qr-block">
             <div class="qr-icon-container">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -283,7 +298,7 @@
 
     <!-- ЭКРАН 2: ИСТОРИЯ -->
     <div id="screen-history" class="screen">
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">История</h2>
+        <h2>История</h2>
         <div style="text-align: center; color: var(--text-secondary); margin-top: 50px; font-weight: 500;">
             У вас пока нет операций.
         </div>
@@ -291,63 +306,125 @@
 
     <!-- ЭКРАН 3: ОБМЕН -->
     <div id="screen-exchange" class="screen">
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">Обмен USDT</h2>
+        <h2>Обмен USDT</h2>
         <div style="text-align: center; color: var(--text-secondary); margin-top: 50px; font-weight: 500;">
             Интерфейс обмена загружается...
         </div>
     </div>
 
-    <!-- ЭКРАН 4: БОНУСЫ (С лентой SwiftSwap на фоне) -->
+    <!-- ЭКРАН 4: БОНУСЫ (С фоновой лентой, БЕЗ "СКОРО") -->
     <div id="screen-bonuses" class="screen">
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">Бонусы</h2>
-        <!-- Сюда вы будете добавлять контент с Овнер-панели -->
-        <div id="bonus-content" style="margin-top: 20px; text-align: center; color: var(--text-secondary); padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--border);">
+        <h2>Бонусы</h2>
+        <div style="margin-top: 20px; text-align: center; color: var(--text-secondary); padding: 40px 20px; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed var(--border);">
             <div style="font-size: 40px; margin-bottom: 10px;">🎁</div>
             <div style="font-size: 16px; font-weight: 700; color: var(--text);">Активных бонусов пока нет</div>
-            <div style="font-size: 13px; margin-top: 5px;">Следите за обновлениями в нашем канале!</div>
+            <div style="font-size: 13px; margin-top: 5px;">Следите за обновлениями!</div>
         </div>
     </div>
 
-    <!-- ЭКРАН 5: УСЛУГИ (Сетка СКОРО) -->
+    <!-- ЭКРАН 5: УСЛУГИ (Диагональная лента) -->
     <div id="screen-services" class="screen">
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">Услуги</h2>
-        <div class="soon-grid">
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
+        <h2>Услуги</h2>
+        
+        <div class="soon-marquee-container">
+            <div class="soon-line">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line reverse">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line reverse">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
         </div>
     </div>
 
-    <!-- ЭКРАН 6: КАРТА (Сетка СКОРО) -->
+    <!-- ЭКРАН 6: КАРТА (Диагональная лента) -->
     <div id="screen-card" class="screen">
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">Карта</h2>
-        <div class="soon-grid">
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
+        <h2>Карта</h2>
+        
+        <div class="soon-marquee-container">
+            <div class="soon-line">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line reverse">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
         </div>
     </div>
 
-    <!-- ЭКРАН 7: ОПЛАТА ПО QR (Сетка СКОРО) -->
+    <!-- ЭКРАН 7: ОПЛАТА ПО QR (Диагональная лента) -->
     <div id="screen-qr" class="screen">
-        <button class="back-btn" onclick="switchScreen('home')" style="background:none; border:none; color: var(--text-secondary); font-size: 16px; padding: 0; margin-top: 10px; cursor: pointer;">← Назад</button>
-        <h2 style="margin-top: 10px; font-size: 22px; font-weight: 800;">Оплата по QR</h2>
-        <div class="soon-grid">
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
-            <div class="soon-item">Скоро!</div>
+        <button class="back-btn" onclick="switchScreen('home')" style="background:none; border:none; color: var(--text-secondary); font-size: 16px; padding: 0; margin-top: 10px; cursor: pointer; z-index: 2; position: relative;">← Назад</button>
+        <h2>Оплата по QR</h2>
+        
+        <div class="soon-marquee-container">
+            <div class="soon-line">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
+            <div class="soon-line reverse">
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+                <div class="soon-capsule">Скоро!</div>
+            </div>
         </div>
     </div>
 
