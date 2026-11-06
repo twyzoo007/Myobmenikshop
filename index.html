@@ -10,29 +10,27 @@
 :root{color-scheme:dark;--bg:#050600;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.035);--line:rgba(255,255,255,.13);--line2:rgba(255,255,255,.07);--text:#f8f9f3;--muted:#969a8d;--lime:#ccff00;--limeText:#101400;--shadow:0 14px 38px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.13)}
 body.light-theme{color-scheme:light;--bg:#f1f2ec;--panel:rgba(255,255,255,.72);--panel2:rgba(255,255,255,.48);--line:rgba(255,255,255,.9);--line2:rgba(0,0,0,.08);--text:#15170e;--muted:#73766c;--lime:#b4e600;--limeText:#111500;--shadow:0 14px 38px rgba(20,25,0,.07),inset 0 1px 0 rgba(255,255,255,.95)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{min-height:100%;background:var(--bg);overscroll-behavior-y:contain}
-body{margin:0;min-height:100vh;padding:0 0 calc(102px + env(safe-area-inset-bottom));overflow-x:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;transition:background .25s,color .25s}
-button,input{font:inherit}
-button{cursor:pointer}
-#capsule-world{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-evenly;opacity:.12;contain:strict;transition:opacity .25s}
+html{min-height:100%;background:var(--bg);overscroll-behavior-y:auto;scroll-behavior:auto}
+body{margin:0;min-height:100%;padding:0 0 calc(94px + env(safe-area-inset-bottom));overflow-x:clip;touch-action:pan-y;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;transition:background .25s,color .25s}
+button,input{font:inherit}button{cursor:pointer}
+#capsule-world{display:none!important;position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;contain:strict}
 .capsule-track{display:flex;width:max-content;flex:none;will-change:transform;animation:drift 52s linear infinite}
 .capsule-track.reverse{animation-name:driftBack;animation-duration:58s}
-.capsule-track:nth-child(3){animation-duration:64s}
-.capsule{position:relative;flex:none;margin:9px 8px;padding:10px 24px;border-radius:999px;white-space:nowrap;font-size:16px;font-weight:900;letter-spacing:1.4px;color:var(--lime);background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.025) 55%,rgba(204,255,0,.09));border:1px solid rgba(204,255,0,.20);border-top-color:rgba(255,255,255,.35);box-shadow:inset 0 1px 1px rgba(255,255,255,.18),0 7px 20px rgba(0,0,0,.10);text-shadow:0 0 12px rgba(204,255,0,.18)}
-.capsule:after{content:"";position:absolute;inset:1px 20% auto;height:1px;background:rgba(255,255,255,.3);border-radius:100%}
-.capsule.soon{color:#141900;background:linear-gradient(135deg,rgba(218,255,75,.88),rgba(170,220,0,.43));border-color:rgba(255,255,255,.58);box-shadow:inset 0 1px 2px rgba(255,255,255,.65),0 8px 22px rgba(160,210,0,.12)}
+.capsule{position:relative;flex:none;margin:9px 8px;padding:10px 24px;border-radius:999px;white-space:nowrap;font-size:16px;font-weight:900;letter-spacing:1.4px;color:var(--lime);background:var(--panel);border:1px solid rgba(204,255,0,.20)}
 @keyframes drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
 @keyframes driftBack{from{transform:translate3d(-50%,0,0)}to{transform:translate3d(0,0,0)}}
 #app{position:relative;z-index:1;min-height:100vh}
-.topbar{height:66px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--panel);border-bottom:1px solid var(--line2);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.topbar{height:62px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--bg);border-bottom:1px solid var(--line2)}
 .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:850;letter-spacing:-.5px}
-.brand-mark{width:36px;height:36px;display:grid;place-items:center;border-radius:12px;color:var(--lime);font-size:21px;font-weight:950;background:linear-gradient(145deg,rgba(204,255,0,.17),rgba(255,255,255,.035));border:1px solid rgba(204,255,0,.27);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 5px 18px rgba(204,255,0,.08)}
+.brand-mark{width:42px;height:38px;display:grid;place-items:center;background:transparent;flex:none}
+.brand-mark svg{width:100%;height:100%;overflow:visible}
 .theme-btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:9px 13px;border-radius:20px;font-size:12px;font-weight:750}
-.screen{display:none;padding:20px 17px 28px;max-width:620px;margin:0 auto;min-height:calc(100vh - 170px)}
-.screen.active{display:block}
+.screen{display:none;padding:18px 16px 28px;max-width:620px;margin:0 auto;min-height:0;contain:layout style}
+.screen.active{display:block;animation:screenIn .16s ease-out}
+@keyframes screenIn{from{opacity:.75;transform:translateY(3px)}to{opacity:1;transform:none}}
 h1,h2,h3,p{margin-top:0}
 h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
-.glass{background:var(--panel);border:1px solid var(--line2);border-top-color:var(--line);border-radius:25px;box-shadow:var(--shadow);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.glass{background:var(--panel);border:1px solid var(--line2);border-top-color:var(--line);border-radius:25px;box-shadow:0 8px 22px rgba(0,0,0,.16)}
 .balance{padding:23px 19px;text-align:center;margin-bottom:15px}
 .greeting{display:flex;align-items:center;justify-content:center;gap:9px;color:var(--muted);font-size:13px;font-weight:650;margin-bottom:20px}
 .avatar{width:29px;height:29px;border-radius:50%;object-fit:cover;background:#34372b}
@@ -58,7 +56,7 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 .benefit{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
 .benefit b{color:var(--text);display:block;margin-bottom:2px}
 .tick{color:var(--lime);font-weight:900}
-.bottom-nav{position:fixed;z-index:20;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:center;padding:8px 3px calc(12px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);border-radius:22px 22px 0 0;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 -8px 26px rgba(0,0,0,.12)}
+.bottom-nav{position:fixed;z-index:20;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:center;padding:8px 3px calc(12px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line);border-radius:22px 22px 0 0;box-shadow:0 -8px 26px rgba(0,0,0,.12)}
 .nav-item{width:20%;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:10px;font-weight:750;border:0;background:none;padding:2px}
 .nav-icon{width:39px;height:37px;display:grid;place-items:center;border-radius:13px;font-size:20px;transition:background .15s,color .15s}
 .nav-item.active{color:var(--lime)}
@@ -78,47 +76,55 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 .back{border:0;background:none;color:var(--muted);padding:0 0 17px;font-size:15px}
 .splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;justify-content:center;align-items:center;background:var(--bg);transition:opacity .42s ease,visibility .42s ease}
 .splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-.splash-logo{width:178px;height:178px;margin-bottom:14px;filter:drop-shadow(0 0 18px rgba(204,255,0,.17))}
+.splash-logo{width:210px;height:170px;margin-bottom:14px;filter:drop-shadow(0 0 18px rgba(204,255,0,.17))}
 .splash-logo svg{width:100%;height:100%;overflow:visible}
 .progress{width:190px;height:4px;border-radius:10px;background:rgba(140,140,140,.22);overflow:hidden;margin:8px 0 15px}
 .progress-fill{height:100%;width:0;background:var(--lime);border-radius:10px;box-shadow:0 0 13px rgba(204,255,0,.7);transition:width 2.05s cubic-bezier(.2,.75,.25,1)}
 .splash-caption{font-size:12px;color:var(--muted);letter-spacing:.2px}
 .toast{position:fixed;z-index:200;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%);max-width:90%;padding:12px 16px;border-radius:14px;background:#25291c;color:#fff;font-size:13px;box-shadow:0 8px 25px #0005;display:none}
 .toast.show{display:block}
-@media(max-width:360px){.screen{padding-left:13px;padding-right:13px}.amount{font-size:41px}.capsule{font-size:14px;padding:9px 19px}}
-@media(prefers-reduced-motion:reduce){.capsule-track{animation-duration:150s}.progress-fill{transition-duration:1s}}
+.staff-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.staff-action{min-height:54px;text-align:left;padding:12px;border-radius:15px;border:1px solid var(--line2);background:var(--panel);color:var(--text);font-weight:750}
+.staff-action:active{transform:scale(.98)}
+.staff-form{display:grid;gap:10px}
+.staff-form .btn{width:100%}
+.staff-row{padding:12px 0;border-bottom:1px solid var(--line2);font-size:13px;line-height:1.5}
+.staff-row:last-child{border:0}
+.staff-meta{color:var(--muted);font-size:11px}
+.captcha-overlay{position:fixed;inset:0;z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72)}
+.captcha-overlay.open{display:flex}
+.captcha-box{width:min(100%,390px);padding:23px;border:1px solid var(--line);border-radius:26px;background:var(--bg);box-shadow:0 24px 80px rgba(0,0,0,.48)}
+.captcha-kicker{font-size:11px;font-weight:850;letter-spacing:1.1px;color:var(--lime);text-transform:uppercase;margin-bottom:9px}
+.captcha-title{font-size:22px;line-height:1.2;font-weight:900;margin:0 0 8px}
+.captcha-hint{font-size:13px;line-height:1.5;color:var(--muted);margin:0 0 17px}
+.captcha-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:16px}
+.captcha-option{min-height:76px;border:1px solid var(--line2);border-radius:17px;background:var(--panel);color:var(--text);font-size:34px;display:grid;place-items:center;transition:border-color .12s,background .12s,transform .12s}
+.captcha-option:active{transform:scale(.96)}
+.captcha-option.selected{border:2px solid var(--lime);background:rgba(204,255,0,.12)}
+.captcha-option:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.captcha-error{min-height:18px;color:#ff7777;font-size:12px;margin:-5px 0 10px}
+.captcha-box .btn{width:100%}
+@media(max-width:360px){.amount{font-size:39px}.screen{padding-left:12px;padding-right:12px}.section-card{padding:16px}}
 </style>
 </head>
 <body>
-<div id="capsule-world" aria-hidden="true">
- <div class="capsule-track"></div><div class="capsule-track reverse"></div><div class="capsule-track"></div>
-</div>
+<div id="capsule-world" aria-hidden="true"></div>
 
 <div class="splash" id="splash">
  <div class="splash-logo">
-  <svg viewBox="0 0 120 120" role="img" aria-label="SwiftSwap">
+  <svg viewBox="0 0 220 150" role="img" aria-label="SwiftSwap — две встречные стрелки">
    <defs>
-    <linearGradient id="glassS" x1="0" y1="0" x2="1" y2="1">
-     <stop offset="0" stop-color="#f4ffd0" stop-opacity=".94"/>
-     <stop offset=".28" stop-color="#d9ff58" stop-opacity=".96"/>
-     <stop offset=".68" stop-color="#a9df00" stop-opacity=".88"/>
-     <stop offset="1" stop-color="#5c8100" stop-opacity=".95"/>
-    </linearGradient>
-    <linearGradient id="shineS" x1="0" y1="0" x2="0" y2="1">
-     <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
-     <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
-     <feGaussianBlur stdDeviation="5"/>
-    </filter>
+    <linearGradient id="glassArrow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5ffd8"/><stop offset=".24" stop-color="#d9ff64"/><stop offset=".58" stop-color="#a9e900"/><stop offset="1" stop-color="#557900"/></linearGradient>
+    <linearGradient id="glassEdge" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".48" stop-color="#d9ff8a" stop-opacity=".25"/><stop offset="1" stop-color="#8bb900" stop-opacity=".8"/></linearGradient>
+    <filter id="arrowGlow" x="-30%" y="-40%" width="160%" height="180%"><feGaussianBlur stdDeviation="5"/></filter>
    </defs>
-   <path d="M87 29C87 16 72 10 57 10 34 10 22 23 22 41c0 18 76 19 76 39 0 18-18 30-40 30-18 0-35-7-35-21" fill="none" stroke="#baff00" stroke-width="27" stroke-linecap="round" opacity=".28" filter="url(#softShadow)"/>
-   <path d="M87 29C87 16 72 10 57 10 34 10 22 23 22 41c0 18 76 19 76 39 0 18-18 30-40 30-18 0-35-7-35-21" fill="none" stroke="url(#glassS)" stroke-width="23" stroke-linecap="round" stroke-linejoin="round"/>
-   <path d="M83 28C82 17 69 13 57 13" fill="none" stroke="url(#shineS)" stroke-width="5" stroke-linecap="round" opacity=".85"/>
-   <path d="M24 88C26 100 39 106 54 107" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" opacity=".48"/>
-   <path d="M35 26C42 19 51 17 60 18" fill="none" stroke="#fff" stroke-width="1.5" opacity=".45"/>
-   <text x="88" y="24" font-size="9" font-weight="900" text-anchor="middle" fill="#172000">RUB</text>
-   <text x="28" y="103" font-size="8" font-weight="900" text-anchor="middle" fill="#172000">USDT</text>
+   <path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="#aaff00" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".26" filter="url(#arrowGlow)"/>
+   <path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="#aaff00" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" opacity=".22" filter="url(#arrowGlow)"/>
+   <path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="url(#glassArrow)" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M79 19H145M76 115H139" stroke="url(#glassEdge)" stroke-width="2.4" stroke-linecap="round" opacity=".9"/>
+   <text x="185" y="18" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">RUB</text>
+   <text x="34" y="143" fill="#d9ff64" font-size="12" font-weight="900" text-anchor="middle">USDT</text>
   </svg>
  </div>
  <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
@@ -127,7 +133,7 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
 
 <div id="app">
  <header class="topbar">
-  <div class="brand"><div class="brand-mark">S</div><span>SwiftSwap</span></div>
+  <div class="brand"><div class="brand-mark"><svg viewBox="0 0 220 150" aria-hidden="true"><path d="M78 27H150V9L207 48L150 87V69H79C54 69 42 82 42 99" fill="none" stroke="#ccff00" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/><path d="M142 123H70V141L13 102L70 63V81H141C166 81 178 68 178 51" fill="none" stroke="#a9df00" stroke-width="17" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span>SwiftSwap</span></div>
   <button class="theme-btn" id="theme-btn" type="button">◐ Тема</button>
  </header>
 
@@ -143,12 +149,10 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
      <button class="btn" type="button" data-soon>Вывести ↗</button>
     </div>
    </div>
-
    <div class="glass section-card qr-card">
     <div class="qr-symbol">▦</div>
-    <div><div class="card-heading">Оплата по QR-коду</div><div class="card-copy">Оплата по QR-коду скоро будет доступна в SwiftSwap.</div><span class="pill">СКОРО!</span></div>
+    <div><div class="card-heading">Оплата по QR-коду</div><div class="card-copy">Оплата по QR-коду скоро будет доступна</div><span class="pill">СКОРО!</span></div>
    </div>
-
    <div class="glass group-card">
     <div class="group-top"><div class="group-icon">✦</div><div><div class="card-heading">Заходи в нашу группу</div><div class="card-copy">SwiftSwap — оставайся на связи с нашим сообществом.</div></div></div>
     <div class="group-benefits">
@@ -158,7 +162,6 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
     </div>
     <button class="btn primary" style="width:100%" id="group-btn" type="button">Перейти в группу ↗</button>
    </div>
-
    <div class="glass section-card" role="button" tabindex="0" id="profile-shortcut">
     <div class="card-heading">Мой профиль　›</div><div class="card-copy">Личные данные и настройки аккаунта</div>
    </div>
@@ -211,141 +214,14 @@ h2{font-size:25px;letter-spacing:-.7px;margin:2px 0 19px;font-weight:850}
    <div class="glass section-card"><div class="card-heading">Поддержка</div><div class="card-copy">По вопросам обмена используй чат с оператором после создания заявки.</div></div>
   </section>
 
+  <section class="screen" id="screen-staff">
+   <h2 id="staff-title">Панель управления</h2>
+   <div class="glass section-card" id="staff-summary"><div class="empty">Загрузка панели…</div></div>
+   <div class="staff-grid" id="staff-actions"></div>
+   <div class="glass section-card" id="staff-content"><div class="empty">Выберите раздел панели.</div></div>
+  </section>
   <section class="screen" id="screen-soon">
    <h2>Скоро в SwiftSwap</h2><div class="glass section-card"><div class="card-icon">✧</div><div class="card-heading">Готовим для тебя новую функцию</div><div class="card-copy">Мы работаем над этим разделом. Следи за обновлениями в группе SwiftSwap.</div><span class="pill">СКОРО!</span></div>
    <button class="btn" style="width:100%" data-screen="home">Вернуться на главную</button>
   </section>
  </main>
-
- <nav class="bottom-nav" aria-label="Основная навигация">
-  <button class="nav-item active" data-screen="home"><span class="nav-icon">⌂</span><span>Кошелёк</span></button>
-  <button class="nav-item" data-screen="history"><span class="nav-icon">◷</span><span>История</span></button>
-  <button class="nav-item exchange" data-screen="exchange"><span class="nav-icon">⇄</span><span>Обмен</span></button>
-  <button class="nav-item" data-screen="bonuses"><span class="nav-icon">♧</span><span>Бонусы</span></button>
-  <button class="nav-item" data-screen="services"><span class="nav-icon">▦</span><span>Услуги</span></button>
- </nav>
-</div>
-<div class="toast" id="toast" role="status"></div>
-
-<script>
-(() => {
- 'use strict';
- const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
- if (tg) { try { tg.ready(); tg.expand(); } catch (_) {} }
- const $ = id => document.getElementById(id);
- const GROUP_URL = ''; // Добавим ссылку на группу, когда ты её пришлёшь.
- const DEVELOPMENT = new Set(['services','map','soon']);
- let toastTimer;
-
- function toast(message) {
-  const node = $('toast');
-  node.textContent = message;
-  node.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => node.classList.remove('show'), 2600);
- }
-
- function setCapsules(mode) {
-  const world = $('capsule-world');
-  const isSoon = mode === 'soon';
-  world.style.opacity = isSoon ? '.17' : '.12';
-  world.querySelectorAll('.capsule-track').forEach(track => {
-   track.replaceChildren();
-   const half = document.createDocumentFragment();
-   for (let i=0;i<7;i++) {
-    const capsule = document.createElement('span');
-    capsule.className = 'capsule' + (isSoon ? ' soon' : '');
-    capsule.textContent = isSoon ? 'СКОРО!' : 'SWIFTSWAP';
-    half.appendChild(capsule);
-   }
-   const first = half.cloneNode(true);
-   track.appendChild(first);
-   track.appendChild(half);
-  });
- }
-
- function switchScreen(name) {
-  const target = $('screen-' + name);
-  if (!target) return;
-  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s === target));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.screen === name));
-  setCapsules(DEVELOPMENT.has(name) ? 'soon' : 'brand');
-  window.scrollTo(0,0);
-  if (tg) { try { tg.HapticFeedback.selectionChanged(); } catch (_) {} }
- }
- document.querySelectorAll('[data-screen]').forEach(el => el.addEventListener('click', () => switchScreen(el.dataset.screen)));
- document.querySelectorAll('.nav-item').forEach(el => el.addEventListener('click', () => switchScreen(el.dataset.screen)));
- document.querySelectorAll('[data-soon]').forEach(el => el.addEventListener('click', () => switchScreen('soon')));
- $('profile-shortcut').addEventListener('click', () => switchScreen('profile'));
- $('profile-shortcut').addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') switchScreen('profile'); });
-
- function setTheme(theme) {
-  document.body.classList.toggle('light-theme', theme === 'light');
-  try { localStorage.setItem('swiftswap-theme', theme); } catch (_) {}
-  if (tg) { try { tg.setHeaderColor(theme === 'light' ? '#f1f2ec' : '#050600'); tg.setBackgroundColor(theme === 'light' ? '#f1f2ec' : '#050600'); } catch (_) {} }
- }
- try {
-  const saved = localStorage.getItem('swiftswap-theme');
-  if (saved) setTheme(saved);
-  else if ((tg && tg.colorScheme === 'light') || (!tg && matchMedia('(prefers-color-scheme: light)').matches)) setTheme('light');
- } catch (_) {}
- $('theme-btn').addEventListener('click', () => setTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light'));
-
- const user = tg && tg.initDataUnsafe ? tg.initDataUnsafe.user : null;
- if (user) {
-  const name = [user.first_name,user.last_name].filter(Boolean).join(' ') || 'Пользователь';
-  $('user-name').textContent = name;
-  $('profile-name').textContent = name;
-  $('profile-id').textContent = user.username ? '@' + user.username : 'ID: ' + user.id;
-  if (user.photo_url) { $('user-avatar').src = user.photo_url; $('profile-avatar').src = user.photo_url; }
- }
-
- $('group-btn').addEventListener('click', () => {
-  if (!GROUP_URL) { toast('Ссылку на группу добавим, когда ты её пришлёшь.'); return; }
-  if (tg) tg.openTelegramLink(GROUP_URL); else window.open(GROUP_URL,'_blank','noopener');
- });
- $('invite-btn').addEventListener('click', () => {
-  const link = 'https://t.me/SwiftSwap_app_bot';
-  const share = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('Присоединяйся к SwiftSwap!');
-  if (tg) tg.openTelegramLink(share); else { navigator.clipboard?.writeText(link); toast('Ссылка на SwiftSwap: ' + link); }
- });
-
- $('exchange-amount').addEventListener('input', () => {
-  const n = Number($('exchange-amount').value);
-  $('exchange-quote').textContent = Number.isFinite(n) && n > 0
-   ? 'Сумма: ' + n.toLocaleString('ru-RU') + ' USDT. Для точного расчёта и создания заявки требуется подключение защищённого API.'
-   : 'Введите сумму для предварительного расчёта. Точный курс подтвердит оператор.';
- });
- $('create-order').addEventListener('click', () => {
-  const amount = Number($('exchange-amount').value);
-  if (!Number.isFinite(amount) || amount <= 0 || !$('exchange-name').value.trim() || !$('exchange-phone').value.trim() || !$('exchange-bank').value.trim()) {
-   toast('Заполни сумму, ФИО, телефон и банк.');
-   return;
-  }
-  toast('Форма заполнена. Создание заявки включим после подключения API.');
- });
- $('promo-btn').addEventListener('click', () => {
-  if (!$('promo-code').value.trim()) { toast('Введи промокод.'); return; }
-  toast('Активация промокода будет доступна после подключения API.');
- });
-
- setCapsules('brand');
-
- const fill = $('progress-fill');
- const caption = $('splash-caption');
- requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-   fill.style.width = '100%';
-   caption.textContent = 'Подготавливаем интерфейс...';
-  });
- });
- fill.addEventListener('transitionend', event => {
-  if (event.propertyName !== 'width') return;
-  caption.textContent = 'Добро пожаловать в SwiftSwap';
-  setTimeout(() => $('splash').classList.add('hide'), 320);
- }, {once:true});
- setTimeout(() => $('splash').classList.add('hide'), 3200);
-})();
-</script>
-</body>
- </html>
